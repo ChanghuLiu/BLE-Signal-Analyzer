@@ -70,6 +70,7 @@ data class SignalTrackerState(
     val minRssi: Int? = null,
     val maxRssi: Int? = null,
     val averageRssi: Int? = null,
+    val stability: SignalStabilityResult = SignalStabilityCalculator.calculate(emptyList()),
     val trend: SignalTrend = SignalTrend.COLLECTING,
     val proximityLabel: ProximityLabel? = null,
     val lastSeen: Long? = null,

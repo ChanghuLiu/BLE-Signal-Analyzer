@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,6 +51,7 @@ fun DeviceDetailScreen(
     showSignalDescription: Boolean,
     onBack: () -> Unit,
     onTrackSignal: () -> Unit,
+    onCompare: () -> Unit,
 ) {
     val quality = signalQualityFor(device.rssi)
     val qualityLabel = signalQualityLabel(quality)
@@ -147,6 +149,15 @@ fun DeviceDetailScreen(
                     .heightIn(min = 52.dp),
             ) {
                 Text(stringResource(R.string.track_signal))
+            }
+            OutlinedButton(
+                onClick = onCompare,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .heightIn(min = 52.dp),
+            ) {
+                Text(stringResource(R.string.compare))
             }
 
             Spacer(modifier = Modifier.height(28.dp))

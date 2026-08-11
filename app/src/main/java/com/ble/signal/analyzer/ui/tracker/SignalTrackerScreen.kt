@@ -73,6 +73,7 @@ import com.ble.signal.analyzer.signal.SignalTrackerConfig
 import com.ble.signal.analyzer.signal.SignalTrackerState
 import com.ble.signal.analyzer.signal.SignalTrend
 import com.ble.signal.analyzer.ui.components.SectionLabel
+import com.ble.signal.analyzer.ui.components.SignalStabilityCard
 import com.ble.signal.analyzer.ui.components.signalQualityColor
 import com.ble.signal.analyzer.ui.proximityLabel
 import com.ble.signal.analyzer.ui.signalQualityLabel
@@ -215,6 +216,11 @@ fun SignalTrackerScreen(
                     textAlign = TextAlign.Center,
                 )
             }
+
+            Spacer(modifier = Modifier.height(28.dp))
+            SectionLabel(text = stringResource(R.string.signal_stability_section))
+            Spacer(modifier = Modifier.height(8.dp))
+            SignalStabilityCard(result = trackerState.stability)
 
             Spacer(modifier = Modifier.height(24.dp))
             SectionLabel(text = stringResource(R.string.relative_proximity))

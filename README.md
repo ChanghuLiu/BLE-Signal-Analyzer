@@ -1,8 +1,9 @@
 # BLE Signal Analyzer
 
-BLE Signal Analyzer is a local-only Android utility for scanning nearby Bluetooth Low Energy
-advertisements and observing relative RSSI changes in real time. It displays advertised device,
-manufacturer, service UUID, Tx Power, and connectable information when those fields are available.
+BLE Signal Analyzer is a local-only Android utility for analyzing and comparing Bluetooth Low
+Energy signal strength. It scans nearby BLE advertisements, shows relative RSSI changes in real
+time, and displays advertised device, manufacturer, service UUID, Tx Power, and connectable
+information when those fields are available.
 
 This repository contains the Android project and public release documentation for BLE Signal
 Analyzer.
@@ -33,6 +34,16 @@ Support contact: artbyte@126.com
 
 BLE devices and RSSI samples live only in memory. There is no Room database, backend, account,
 cloud sync, advertising, analytics, or network communication.
+
+## V2 features
+
+- Compare two BLE device signals in real time using one shared scan stream
+- Signal Stability Score in Signal Tracker and device comparison
+
+The Signal Stability Score is an app-defined relative metric based on recent RSSI variation,
+signal range, sudden changes, and signal continuity. It is not an official Bluetooth standard
+measurement. Comparison and stability samples remain in memory only and are limited to the recent
+30-second analysis window.
 
 ## BLE scanning and permissions
 

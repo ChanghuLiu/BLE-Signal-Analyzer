@@ -9,6 +9,7 @@ import com.ble.signal.analyzer.model.SignalQuality
 import com.ble.signal.analyzer.scanner.DeviceFilterMode
 import com.ble.signal.analyzer.scanner.DeviceSortMode
 import com.ble.signal.analyzer.signal.ProximityLabel
+import com.ble.signal.analyzer.signal.SignalStabilityLabel
 import com.ble.signal.analyzer.signal.TrackingUnavailableReason
 
 @Composable
@@ -30,6 +31,17 @@ fun proximityLabel(label: ProximityLabel): String = stringResource(
         ProximityLabel.NEARBY -> R.string.proximity_nearby
         ProximityLabel.WEAK -> R.string.proximity_weak
         ProximityLabel.VERY_WEAK -> R.string.proximity_very_weak
+    },
+)
+
+@Composable
+fun signalStabilityLabel(label: SignalStabilityLabel): String = stringResource(
+    when (label) {
+        SignalStabilityLabel.COLLECTING -> R.string.stability_collecting
+        SignalStabilityLabel.EXCELLENT -> R.string.stability_excellent
+        SignalStabilityLabel.STABLE -> R.string.stability_stable
+        SignalStabilityLabel.VARIABLE -> R.string.stability_variable
+        SignalStabilityLabel.UNSTABLE -> R.string.stability_unstable
     },
 )
 

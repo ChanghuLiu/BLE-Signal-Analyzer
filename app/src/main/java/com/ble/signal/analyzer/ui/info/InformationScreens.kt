@@ -142,6 +142,8 @@ fun AboutScreen(
         InformationSubheading(stringResource(R.string.features))
         BulletList(
             stringResource(R.string.feature_ble_scanning),
+            stringResource(R.string.feature_compare_devices),
+            stringResource(R.string.feature_signal_stability),
             stringResource(R.string.feature_realtime_rssi),
             stringResource(R.string.feature_signal_labels),
             stringResource(R.string.feature_trend),

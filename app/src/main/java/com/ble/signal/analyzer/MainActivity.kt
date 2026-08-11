@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ble.signal.analyzer.localization.AppLanguage
+import com.ble.signal.analyzer.model.BleDeviceInfo
 import com.ble.signal.analyzer.ui.BleSignalAnalyzerApp
 import com.ble.signal.analyzer.ui.theme.BLESignalAnalyzerTheme
 import com.ble.signal.analyzer.data.ble.BleScanErrorKind
@@ -84,6 +85,9 @@ class MainActivity : AppCompatActivity() {
                     onFreezeChanged = viewModel::setFreezeEnabled,
                     onDeviceSelected = viewModel::openDevice,
                     onOpenTracker = ::openTrackerAfterEnvironmentCheck,
+                    onOpenCompare = viewModel::openCompareSelection,
+                    onComparisonDeviceSelected = ::selectComparisonAfterEnvironmentCheck,
+                    onResumeComparison = ::resumeComparisonAfterEnvironmentCheck,
                     onResumeTracking = ::resumeTrackingAfterEnvironmentCheck,
                     onOpenSettings = viewModel::openSettings,
                     onOpenPrivacyPolicy = viewModel::openPrivacyPolicy,
@@ -91,6 +95,8 @@ class MainActivity : AppCompatActivity() {
                     onOpenAbout = viewModel::openAbout,
                     onBack = viewModel::navigateBack,
                     onBackToScanner = viewModel::backToScannerFromTracker,
+                    onBackToScannerFromComparison =
+                        viewModel::backToScannerFromComparison,
                     onRequestBluetoothPermission = ::requestBluetoothPermissions,
                     onPermissionNotNow = viewModel::deferPermissionRequest,
                     onOpenAppSettings = ::openAppSettings,
@@ -208,6 +214,16 @@ class MainActivity : AppCompatActivity() {
     private fun resumeTrackingAfterEnvironmentCheck() {
         refreshBluetoothEnvironment()
         viewModel.resumeSignalTracking()
+    }
+
+    private fun selectComparisonAfterEnvironmentCheck(device: BleDeviceInfo) {
+        refreshBluetoothEnvironment()
+        viewModel.selectComparisonDevice(device)
+    }
+
+    private fun resumeComparisonAfterEnvironmentCheck() {
+        refreshBluetoothEnvironment()
+        viewModel.resumeComparison()
     }
 
     private fun openAppSettings() {

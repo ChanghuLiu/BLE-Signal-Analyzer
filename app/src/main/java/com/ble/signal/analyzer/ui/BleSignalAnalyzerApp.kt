@@ -10,6 +10,8 @@ import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.scanner.DeviceFilterMode
 import com.ble.signal.analyzer.scanner.DeviceSortMode
 import com.ble.signal.analyzer.ui.detail.DeviceDetailScreen
+import com.ble.signal.analyzer.ui.compare.CompareDeviceSelectionScreen
+import com.ble.signal.analyzer.ui.compare.CompareDevicesScreen
 import com.ble.signal.analyzer.ui.info.AboutScreen
 import com.ble.signal.analyzer.ui.info.HowBleSignalsWorkScreen
 import com.ble.signal.analyzer.ui.info.PrivacyPolicyScreen
@@ -27,6 +29,9 @@ fun BleSignalAnalyzerApp(
     onFreezeChanged: (Boolean) -> Unit,
     onDeviceSelected: (BleDeviceInfo) -> Unit,
     onOpenTracker: () -> Unit,
+    onOpenCompare: () -> Unit,
+    onComparisonDeviceSelected: (BleDeviceInfo) -> Unit,
+    onResumeComparison: () -> Unit,
     onResumeTracking: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
@@ -34,6 +39,7 @@ fun BleSignalAnalyzerApp(
     onOpenAbout: () -> Unit,
     onBack: () -> Unit,
     onBackToScanner: () -> Unit,
+    onBackToScannerFromComparison: () -> Unit,
     onRequestBluetoothPermission: () -> Unit,
     onPermissionNotNow: () -> Unit,
     onOpenAppSettings: () -> Unit,
@@ -88,6 +94,7 @@ fun BleSignalAnalyzerApp(
                 showSignalDescription = uiState.signalDescriptions,
                 onBack = onBack,
                 onTrackSignal = onOpenTracker,
+                onCompare = onOpenCompare,
             )
         }
 
@@ -112,6 +119,33 @@ fun BleSignalAnalyzerApp(
                 onBackToScanner = onBackToScanner,
             )
         }
+
+        AppDestination.CompareSelection -> uiState.compareDevicesState.deviceA.device?.let {
+            deviceA ->
+            CompareDeviceSelectionScreen(
+                deviceA = deviceA,
+                devices = uiState.devices,
+                showSignalDescription = uiState.signalDescriptions,
+                showSameDeviceError = uiState.compareSelectionError,
+                onDeviceBSelected = onComparisonDeviceSelected,
+                onBack = onBack,
+                onBackToScanner = onBackToScannerFromComparison,
+            )
+        }
+
+        AppDestination.CompareDevices -> CompareDevicesScreen(
+            state = uiState.compareDevicesState,
+            keepScreenAwake = uiState.keepScreenAwake,
+            bleSupported = uiState.bleSupported,
+            bluetoothEnabled = uiState.bluetoothEnabled,
+            permissionState = uiState.permissionState,
+            onResumeComparison = onResumeComparison,
+            onRequestBluetoothPermission = onRequestBluetoothPermission,
+            onOpenAppSettings = onOpenAppSettings,
+            onEnableBluetooth = onEnableBluetooth,
+            onBack = onBack,
+            onBackToScanner = onBackToScannerFromComparison,
+        )
 
         AppDestination.Settings -> SettingsScreen(
             appVersion = BuildConfig.VERSION_NAME,

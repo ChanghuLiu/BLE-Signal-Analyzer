@@ -7,6 +7,27 @@ data class SignalAvailability(
     val isLost: Boolean,
 )
 
+object SignalAvailabilityCalculator {
+    fun calculate(
+        lastSeenMillis: Long?,
+        trackingStartedAtMillis: Long?,
+        nowMillis: Long,
+    ): SignalAvailability {
+        val referenceTime = when {
+            lastSeenMillis != null && trackingStartedAtMillis != null ->
+                maxOf(lastSeenMillis, trackingStartedAtMillis)
+            lastSeenMillis != null -> lastSeenMillis
+            trackingStartedAtMillis != null -> trackingStartedAtMillis
+            else -> nowMillis
+        }
+        val elapsedMillis = (nowMillis - referenceTime).coerceAtLeast(0L)
+        return SignalAvailability(
+            isWaiting = elapsedMillis >= SignalTrackerConfig.STALE_AFTER_MILLIS,
+            isLost = elapsedMillis >= SignalTrackerConfig.LOST_AFTER_MILLIS,
+        )
+    }
+}
+
 /** Pure selected-device session logic shared by the ViewModel and unit tests. */
 object SignalTrackerSession {
     fun start(
@@ -30,13 +51,10 @@ object SignalTrackerSession {
         state: SignalTrackerState,
         nowMillis: Long,
     ): SignalAvailability {
-        val referenceTime = state.lastSeen
-            ?: state.trackingStartedAt
-            ?: nowMillis
-        val elapsedMillis = (nowMillis - referenceTime).coerceAtLeast(0L)
-        return SignalAvailability(
-            isWaiting = elapsedMillis >= SignalTrackerConfig.STALE_AFTER_MILLIS,
-            isLost = elapsedMillis >= SignalTrackerConfig.LOST_AFTER_MILLIS,
+        return SignalAvailabilityCalculator.calculate(
+            lastSeenMillis = state.lastSeen,
+            trackingStartedAtMillis = state.trackingStartedAt,
+            nowMillis = nowMillis,
         )
     }
 
