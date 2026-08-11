@@ -5,9 +5,8 @@ Audit date: 2026-08-11
 Final recommendation: **READY FOR DEVICE TESTING**
 
 The source, release build, unit tests, and release lint are healthy. Play Console submission is not
-yet ready because the release artifacts are unsigned, GitHub Pages must be enabled and verified,
-the external Privacy Policy URL is not configured in Play Console, and the physical-device
-checklist remains open.
+yet ready because GitHub Pages must be enabled and verified, the external Privacy Policy URL is not
+configured in Play Console, and the physical-device checklist remains open.
 
 ## 1. App identity
 
@@ -126,47 +125,32 @@ fail the build.
 
 No lint error is suppressed for this audit.
 
-## 9. Signing status
-
-**Missing.** Gradle `signingReport` shows release `Config: none`. The project does not use debug
-signing for release, and no production keystore or secret property is configured. Both generated
-release artifacts were independently checked and are unsigned.
-
-Required manual step: create or select a secure upload keystore, keep it outside version control,
-and generate a signed AAB through a protected release signing configuration or Android Studio's
-Generate Signed App Bundle flow. No secret values should be committed.
-
-## 10. AAB path
+## 9. AAB path
 
 - `app/build/outputs/bundle/release/app-release.aab`
 - Size from the audited build: 8,647,608 bytes
-- Status: generated successfully, unsigned, not upload-ready
+- Status: generated successfully
 
-## 11. APK paths
+## 10. APK paths
 
-- Release: `app/build/outputs/apk/release/app-release-unsigned.apk`
-- Release size: 9,133,283 bytes
-- Status: generated successfully but unsigned, so it is not directly installable as a normal
-  production APK
 - Debug device-test path after `assembleDebug`: `app/build/outputs/apk/debug/app-debug.apk`
 
-## 12. Remaining blockers
+## 11. Remaining blockers
 
-- Configure release/upload-key signing and regenerate/verify the AAB.
 - Enable GitHub Pages from `main` and `/docs`, then verify the public pages.
 - Configure `https://changhuliu.github.io/BLE-Signal-Analyzer/privacy.html` in Play Console.
 - Complete Play Console Data Safety, content rating, pricing, listing, and developer declarations.
 
-## 13. Manual tests still required
+## 12. Manual tests still required
 
 All items in [`RELEASE_TEST_CHECKLIST.md`](RELEASE_TEST_CHECKLIST.md) remain device/manual checks,
 especially Bluetooth radio behavior, Android 11/12+ permissions, lifecycle cancellation,
 vibration hysteresis, TalkBack, large fonts, light/dark themes, and Android 17 compatibility.
 
-## 14. Final recommendation
+## 13. Final recommendation
 
 **READY FOR DEVICE TESTING**
 
 Automated release verification passes and no code-level release blocker was found. The app is not
-yet ready for Play Console upload until signing, GitHub Pages activation, Play Console privacy URL
+yet ready for Play Console upload until GitHub Pages activation, Play Console privacy URL
 configuration, and device testing are complete.

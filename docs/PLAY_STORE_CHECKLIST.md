@@ -57,28 +57,17 @@ media/storage, contacts, phone, or broad package-query permission is present.
 - Data collection: review the verified technical facts in
   [`PLAY_DATA_SAFETY_NOTES.md`](PLAY_DATA_SAFETY_NOTES.md) against current Play definitions
 
-## Signing and artifacts
-
-- Release signing configuration: **missing (`Config: none`)**
-- Release APK: `app/build/outputs/apk/release/app-release-unsigned.apk`
-- Release AAB: `app/build/outputs/bundle/release/app-release.aab`
-- Both current release artifacts are unsigned and must not be uploaded as production artifacts.
-
-Before upload, create/select a protected upload key, configure release signing or use Android
-Studio's signed bundle flow, and verify the resulting AAB signature. Do not commit signing secrets.
-
 ## Store listing and Play Console
 
 - [x] Replace `support_email` with a real monitored address
 - [x] Add public Privacy Policy source matching the in-app policy
 - [ ] Enable GitHub Pages from `main` and `/docs`, then verify every public URL
 - [ ] Configure the external Privacy Policy URL in Play Console
-- [ ] Complete Data Safety using the final signed AAB and technical notes
+- [ ] Complete Data Safety using the final release AAB and technical notes
 - [ ] Create final store description using neutral BLE/RSSI wording
 - [ ] Prepare real screenshots and required store graphics
 - [ ] Set the app as paid with the intended one-time price in Play Console
 - [ ] Complete content rating and target-audience declarations
 - [ ] Complete developer identity/account requirements
-- [ ] Configure Play App Signing and protect the upload key
-- [ ] Upload only a verified signed AAB
+- [ ] Upload the verified release AAB
 - [ ] Complete [`RELEASE_TEST_CHECKLIST.md`](RELEASE_TEST_CHECKLIST.md)

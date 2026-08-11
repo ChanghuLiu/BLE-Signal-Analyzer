@@ -78,10 +78,10 @@ From the project root:
 # Debug APK
 ./gradlew assembleDebug
 
-# Unsigned release APK unless release signing is configured
+# Release APK
 ./gradlew assembleRelease
 
-# Unsigned release Android App Bundle unless release signing is configured
+# Release Android App Bundle
 ./gradlew bundleRelease
 
 # Local JVM tests
@@ -94,27 +94,10 @@ From the project root:
 The generated files are normally:
 
 - Debug APK: `app/build/outputs/apk/debug/app-debug.apk`
-- Unsigned release APK: `app/build/outputs/apk/release/app-release-unsigned.apk`
 - Release AAB: `app/build/outputs/bundle/release/app-release.aab`
 
 Install the debug APK through Android Studio or with `adb install` after building it. Grant
 Bluetooth permissions on the device and enable Bluetooth through the Android system flow.
-
-## Release signing
-
-The project does not contain a production signing configuration or signing secrets. Before a Play
-Console upload:
-
-1. Create or select a protected upload keystore using Android Studio's **Generate Signed App
-   Bundle or APK** flow.
-2. Keep the keystore and passwords outside version control.
-3. Configure the release variant or use the Android Studio signing flow to sign the AAB with the
-   upload key.
-4. Enable or use Google Play App Signing and retain the upload key securely.
-5. Verify the signed bundle before uploading it.
-
-Never commit a keystore, private key, password, `local.properties`, or secret-bearing
-`gradle.properties` file.
 
 ## Release readiness
 

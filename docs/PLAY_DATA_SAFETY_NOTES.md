@@ -67,7 +67,7 @@ checked against the behavior of supported devices and current policy definitions
 
 ## Submission review points
 
-- Verify the final signed AAB has the same merged permissions.
+- Verify the final release AAB has the same merged permissions.
 - Review whether on-device-only processing is outside "collected" under the current Data Safety
   definitions instead of relying on this document alone.
 - Support email is configured as `artbyte@126.com`.
