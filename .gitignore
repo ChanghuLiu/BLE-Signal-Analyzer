@@ -18,4 +18,10 @@
 *.jks
 *.keystore
 *.p12
-local.properties
+*.pem
+*.key
+.env
+.env.*
+signing.properties
+keystore.properties
+secrets.properties

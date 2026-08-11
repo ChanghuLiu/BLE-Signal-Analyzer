@@ -44,8 +44,10 @@ media/storage, contacts, phone, or broad package-query permission is present.
 ## Privacy and Data Safety
 
 - In-app Privacy Policy: present under Settings
-- External Privacy Policy URL: **NOT YET CONFIGURED**
-- Support email: **PLACEHOLDER — MUST BE REPLACED BEFORE RELEASE**
+- External Privacy Policy URL target:
+  `https://changhuliu.github.io/BLE-Signal-Analyzer/privacy.html`
+- GitHub Pages status: **NOT YET ENABLED — URL MUST BE VERIFIED BEFORE PLAY SUBMISSION**
+- Support email: `artbyte@126.com`
 - BLE scan processing: local and memory-only
 - BLE history: not persisted
 - Preferences: stored locally with DataStore; one permission-prompt flag uses SharedPreferences
@@ -66,8 +68,9 @@ Studio's signed bundle flow, and verify the resulting AAB signature. Do not comm
 
 ## Store listing and Play Console
 
-- [ ] Replace `support_email` with a real monitored address
-- [ ] Publish a public Privacy Policy matching the in-app policy
+- [x] Replace `support_email` with a real monitored address
+- [x] Add public Privacy Policy source matching the in-app policy
+- [ ] Enable GitHub Pages from `main` and `/docs`, then verify every public URL
 - [ ] Configure the external Privacy Policy URL in Play Console
 - [ ] Complete Data Safety using the final signed AAB and technical notes
 - [ ] Create final store description using neutral BLE/RSSI wording

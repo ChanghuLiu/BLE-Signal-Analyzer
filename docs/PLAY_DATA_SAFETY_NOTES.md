@@ -67,4 +67,5 @@ checked against the behavior of supported devices and current policy definitions
 - Verify the final signed AAB has the same merged permissions.
 - Review whether on-device-only processing is outside "collected" under the current Data Safety
   definitions instead of relying on this document alone.
-- Provide a real public Privacy Policy URL and real support email before submission.
+- Support email is configured as `artbyte@126.com`.
+- Enable GitHub Pages and verify the public Privacy Policy URL before submission.

@@ -4,8 +4,21 @@ BLE Signal Analyzer is a local-only Android utility for scanning nearby Bluetoot
 advertisements and observing relative RSSI changes in real time. It displays advertised device,
 manufacturer, service UUID, Tx Power, and connectable information when those fields are available.
 
+This repository contains the Android project and public release documentation for BLE Signal
+Analyzer.
+
 RSSI is affected by hardware and the surrounding environment. The app does not calculate exact
 distance or exact device location.
+
+## Public website
+
+Website: https://changhuliu.github.io/BLE-Signal-Analyzer/
+
+- [Privacy Policy](https://changhuliu.github.io/BLE-Signal-Analyzer/privacy.html)
+- [Support](https://changhuliu.github.io/BLE-Signal-Analyzer/support.html)
+- [Terms of Use](https://changhuliu.github.io/BLE-Signal-Analyzer/terms.html)
+
+Support contact: artbyte@126.com
 
 ## Architecture
 
@@ -44,8 +57,8 @@ A local SharedPreferences flag records whether Bluetooth permission was previous
 the app does not repeatedly prompt. App backup is disabled and backup/transfer rules exclude app
 data.
 
-The in-app Privacy Policy is available from Settings. A public privacy-policy URL and a real
-support email must be configured before Play Console submission.
+The in-app Privacy Policy is available from Settings. Public website source is stored in the
+repository's `docs/` directory and is served through GitHub Pages after Pages is enabled.
 
 ## Requirements
 

@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">BLE Signal Analyzer</string>
-    <!-- Replace this placeholder with the release support address before publishing. -->
-    <string name="support_email">support@blesignalanalyzer.example</string>
+    <string name="support_email">artbyte@126.com</string>
 
     <string name="settings_title">Settings</string>
     <string name="privacy_policy_title">Privacy Policy</string>

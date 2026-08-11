@@ -5,8 +5,9 @@ Audit date: 2026-08-11
 Final recommendation: **READY FOR DEVICE TESTING**
 
 The source, release build, unit tests, and release lint are healthy. Play Console submission is not
-yet ready because the release artifacts are unsigned, the support email is a placeholder, the
-external Privacy Policy URL is not configured, and the physical-device checklist remains open.
+yet ready because the release artifacts are unsigned, GitHub Pages must be enabled and verified,
+the external Privacy Policy URL is not configured in Play Console, and the physical-device
+checklist remains open.
 
 ## 1. App identity
 
@@ -17,7 +18,7 @@ external Privacy Policy URL is not configured, and the physical-device checklist
 
 No old package name, alternate product name, mock product name, or executable Phase 1 sample data
 was found. Test-only BLE values remain confined to unit tests. The inactive generic R8 placeholder
-comment was removed. The one intentional release placeholder is `support_email`.
+comment was removed. The support contact is configured as `artbyte@126.com`.
 
 ## 2. SDK configuration
 
@@ -147,8 +148,8 @@ Generate Signed App Bundle flow. No secret values should be committed.
 ## 12. Remaining blockers
 
 - Configure release/upload-key signing and regenerate/verify the AAB.
-- Replace `support@blesignalanalyzer.example` in `app/src/main/res/values/strings.xml`.
-- Publish a real external Privacy Policy and configure its Play Console URL.
+- Enable GitHub Pages from `main` and `/docs`, then verify the public pages.
+- Configure `https://changhuliu.github.io/BLE-Signal-Analyzer/privacy.html` in Play Console.
 - Complete Play Console Data Safety, content rating, pricing, listing, and developer declarations.
 
 ## 13. Manual tests still required
@@ -162,5 +163,5 @@ vibration hysteresis, TalkBack, large fonts, light/dark themes, and Android 17 c
 **READY FOR DEVICE TESTING**
 
 Automated release verification passes and no code-level release blocker was found. The app is not
-yet ready for Play Console upload until signing, public contact/privacy details, and device testing
-are complete.
+yet ready for Play Console upload until signing, GitHub Pages activation, Play Console privacy URL
+configuration, and device testing are complete.

@@ -24,5 +24,5 @@ measurement or TalkBack behavior completely.
 - [ ] No device-location, hidden-tracker, people-tracking, or exact-distance capability claim appears.
 - [ ] The app name is consistently shown as BLE Signal Analyzer.
 - [ ] Settings and About both show the installed `versionName`.
-- [ ] The support email placeholder is replaced before release.
+- [x] The support email is configured as `artbyte@126.com`.
 - [ ] Manifest permissions are unchanged except for the Phase 6 `VIBRATE` permission.

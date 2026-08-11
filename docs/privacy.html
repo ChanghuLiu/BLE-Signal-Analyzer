@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Privacy Policy for BLE Signal Analyzer.">
+    <title>Privacy Policy - BLE Signal Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-wrap">
+            <a class="brand" href="index.html">BLE Signal Analyzer</a>
+            <nav class="site-nav" aria-label="Primary navigation">
+                <a href="index.html">Home</a>
+                <a href="privacy.html" aria-current="page">Privacy Policy</a>
+                <a href="support.html">Support</a>
+                <a href="terms.html">Terms of Use</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <article class="content-card">
+            <h1>Privacy Policy</h1>
+            <p class="meta">Privacy Policy for BLE Signal Analyzer<br>Last updated: August 11, 2026</p>
+
+            <p>BLE Signal Analyzer is a lightweight Android utility for scanning Bluetooth Low Energy devices and analyzing relative signal strength. The app is designed to work locally on the user's Android device.</p>
+
+            <p>BLE Signal Analyzer does not require an account or login. It has no backend server, cloud service, advertising service, analytics service, or network communication.</p>
+
+            <h2>Bluetooth Permissions</h2>
+            <p>On Android 12 and later, BLE Signal Analyzer uses Android's Nearby Devices Bluetooth permissions to scan nearby BLE advertisements and to access Bluetooth information required by the app, such as adapter state and Android-provided device names or addresses.</p>
+            <p>These permissions are used only for BLE scanning and signal analysis. BLE Signal Analyzer does not use Bluetooth permissions to track people or determine an exact physical location.</p>
+
+            <h2>Older Android Location Permission</h2>
+            <p>On Android 11 and earlier, Android may require location permission before an app can scan for Bluetooth Low Energy devices. BLE Signal Analyzer requests this permission only because of that Android platform requirement.</p>
+            <p>BLE Signal Analyzer does not collect, store, upload, sell, or share location information.</p>
+
+            <h2>Data Processing</h2>
+            <p>Bluetooth scanning occurs locally on the device. BLE device information may include:</p>
+            <ul>
+                <li>Device name</li>
+                <li>Android-provided device address</li>
+                <li>RSSI signal strength</li>
+                <li>Manufacturer data</li>
+                <li>Service UUIDs</li>
+                <li>Tx Power</li>
+                <li>Connectable status</li>
+                <li>Last-seen time</li>
+            </ul>
+            <p>This BLE information is processed temporarily in memory while the app is running. BLE scan results and device addresses are not uploaded. No BLE scan history or RSSI history is permanently stored.</p>
+
+            <h2>Local Settings Storage</h2>
+            <p>User preferences such as theme, scan duration, minimum RSSI, signal display preferences, keep-screen-awake preference, and proximity alert threshold are stored locally using Android DataStore.</p>
+            <p>A local SharedPreferences flag may record whether Bluetooth permission has previously been requested. This flag helps prevent repeated automatic permission prompts and does not contain BLE scan results.</p>
+
+            <h2>Data Sharing</h2>
+            <p>BLE Signal Analyzer does not sell or share user data. It does not share BLE scan results, device addresses, local settings, or location information with the developer, advertisers, analytics providers, or other third parties.</p>
+
+            <h2>Internet and Network Access</h2>
+            <p>BLE Signal Analyzer does not request Android Internet permission and does not perform network communication. The app has no backend, remote API, cloud sync, advertising SDK, or analytics SDK.</p>
+
+            <h2>Data Retention</h2>
+            <p>No BLE scan history is permanently stored. BLE device results and RSSI samples exist only temporarily in memory and are discarded when the app process ends.</p>
+            <p>Local user preferences and the Bluetooth permission-requested flag remain on the device until the user changes them, clears the app's data, or uninstalls the app. Application backup is disabled.</p>
+
+            <h2>Children's Privacy</h2>
+            <p>BLE Signal Analyzer is not designed to collect personal information from children. The app has no account system, login, advertising, analytics, or network upload. If a parent or guardian has a privacy question, they may contact the developer using the address below.</p>
+
+            <h2>Changes to This Policy</h2>
+            <p>This Privacy Policy may be updated if the app's behavior, legal requirements, or store requirements change. Material updates will be reflected on this page with a revised last-updated date.</p>
+
+            <h2>Contact</h2>
+            <p>For privacy questions or requests, contact:</p>
+            <p><a href="mailto:artbyte@126.com">artbyte@126.com</a></p>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-wrap">
+            <p><strong>BLE Signal Analyzer</strong></p>
+            <p>Contact: <a href="mailto:artbyte@126.com">artbyte@126.com</a></p>
+        </div>
+    </footer>
+</body>
+</html>
