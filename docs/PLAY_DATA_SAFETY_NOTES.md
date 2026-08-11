@@ -1,0 +1,70 @@
+# Google Play Data Safety Technical Notes
+
+These notes describe the verified V1.0 implementation. They are supporting facts for completing
+Google Play's Data Safety form, not automatic answers to every Play Console question. Re-check the
+current Play definitions and the final signed artifact before submission.
+
+## Accounts and identity
+
+- The app has no account system and no login.
+- It does not create or transmit user identifiers.
+- It has no advertising ID integration.
+
+## Network and third-party services
+
+- The merged release manifest has no `INTERNET` permission.
+- Source and dependency audits found no backend API, HTTP client, Firebase, Crashlytics,
+  analytics, advertising, WebSocket, or cloud SDK.
+- The app does not upload BLE scan results, device addresses, or settings.
+
+## BLE data processed on the device
+
+The app temporarily processes Android BLE advertisement fields, including device name/address,
+RSSI, manufacturer data, service UUIDs, Tx Power, connectable state, and last-seen time. This data
+is used only to render the scanner, detail, and active tracker screens.
+
+- BLE device results are held in `StateFlow`-backed in-memory UI state.
+- RSSI and smoothed RSSI samples are held in a rolling in-memory window.
+- No BLE device address, scan history, RSSI history, manufacturer data, service UUID history, or
+  selected device is written to persistent storage.
+- No Room or application database is used.
+
+## Local settings
+
+Preferences DataStore file `user_settings` stores only:
+
+- `scan_duration_seconds`
+- `show_unnamed_devices`
+- `minimum_rssi`
+- `theme_mode`
+- `signal_descriptions`
+- `keep_screen_awake_while_tracking`
+- `proximity_alert_threshold`
+
+SharedPreferences file `bluetooth_permission_state` stores one local control flag:
+
+- `permission_requested`
+
+This flag prevents repeated automatic permission prompts and contains no BLE device data.
+
+The application sets `allowBackup=false`; both legacy and Android 12+ extraction rules exclude app
+files, preferences, databases, and external app data from backup. Some Android device vendors may
+control device-to-device migration at the platform level, so final Play Console wording should be
+checked against the behavior of supported devices and current policy definitions.
+
+## Permissions and purpose
+
+- `BLUETOOTH_SCAN`: core nearby BLE advertisement scanning; marked `neverForLocation`.
+- `BLUETOOTH_CONNECT`: reads Bluetooth adapter state and Android-provided device name/address.
+- Legacy `BLUETOOTH`, `BLUETOOTH_ADMIN`, and `ACCESS_FINE_LOCATION`: capped at API 30 for the
+  Android 11-and-earlier BLE compatibility path.
+- `VIBRATE`: optional foreground proximity alert.
+- The AndroidX Core signature-level dynamic-receiver permission protects an internal non-exported
+  receiver registration path and does not expose user data.
+
+## Submission review points
+
+- Verify the final signed AAB has the same merged permissions.
+- Review whether on-device-only processing is outside "collected" under the current Data Safety
+  definitions instead of relying on this document alone.
+- Provide a real public Privacy Policy URL and real support email before submission.
