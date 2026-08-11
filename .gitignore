@@ -1,4 +1,10 @@
 *.iml
+.idea/
+.gradle/
+**/build/
+/app/release/
+**/cache/export/
+*.csv
 .gradle
 .kotlin/
 .agents/

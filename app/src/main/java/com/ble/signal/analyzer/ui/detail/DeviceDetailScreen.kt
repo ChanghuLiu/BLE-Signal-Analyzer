@@ -52,6 +52,7 @@ fun DeviceDetailScreen(
     onBack: () -> Unit,
     onTrackSignal: () -> Unit,
     onCompare: () -> Unit,
+    onOpenAdvertisementInspector: () -> Unit,
 ) {
     val quality = signalQualityFor(device.rssi)
     val qualityLabel = signalQualityLabel(quality)
@@ -158,6 +159,18 @@ fun DeviceDetailScreen(
                     .heightIn(min = 52.dp),
             ) {
                 Text(stringResource(R.string.compare))
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+            SectionLabel(text = stringResource(R.string.advanced_section))
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onOpenAdvertisementInspector,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 52.dp),
+            ) {
+                Text(stringResource(R.string.advertisement_inspector))
             }
 
             Spacer(modifier = Modifier.height(28.dp))

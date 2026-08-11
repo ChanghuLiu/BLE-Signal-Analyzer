@@ -51,18 +51,22 @@
             </ul>
             <p>This BLE information is processed temporarily in memory while the app is running. BLE scan results and device addresses are not uploaded. No BLE scan history or RSSI history is permanently stored.</p>
 
+            <h2>CSV Session Export</h2>
+            <p>Users can explicitly export current-session Signal Tracker, device comparison, or BLE environment data as a CSV file. Export files are created locally in the app's private cache. BLE Signal Analyzer does not upload exported files and maintains no export history or database.</p>
+            <p>A file leaves the app only when the user chooses a destination through Android's share functionality. The selected destination may retain or transmit its copy according to that destination's own behavior. Temporary export files in the app cache are eligible for cleanup after 24 hours when a later export is created.</p>
+
             <h2>Local Settings Storage</h2>
             <p>User preferences such as theme, scan duration, minimum RSSI, signal display preferences, keep-screen-awake preference, and proximity alert threshold are stored locally using Android DataStore.</p>
             <p>A local SharedPreferences flag may record whether Bluetooth permission has previously been requested. This flag helps prevent repeated automatic permission prompts and does not contain BLE scan results.</p>
 
             <h2>Data Sharing</h2>
-            <p>BLE Signal Analyzer does not sell or share user data. It does not share BLE scan results, device addresses, local settings, or location information with the developer, advertisers, analytics providers, or other third parties.</p>
+            <p>BLE Signal Analyzer does not sell user data or automatically share BLE scan results, device addresses, local settings, or location information with the developer, advertisers, analytics providers, or other third parties. A CSV export is shared only with the destination explicitly selected by the user through Android's share functionality.</p>
 
             <h2>Internet and Network Access</h2>
             <p>BLE Signal Analyzer does not request Android Internet permission and does not perform network communication. The app has no backend, remote API, cloud sync, advertising SDK, or analytics SDK.</p>
 
             <h2>Data Retention</h2>
-            <p>No BLE scan history is permanently stored. BLE device results and RSSI samples exist only temporarily in memory and are discarded when the app process ends.</p>
+            <p>No BLE scan or export history is maintained. BLE device results and RSSI samples exist only temporarily in memory and are discarded when the app process ends. User-generated CSV files are temporary cache files rather than an in-app archive.</p>
             <p>Local user preferences and the Bluetooth permission-requested flag remain on the device until the user changes them, clears the app's data, or uninstalls the app. Application backup is disabled.</p>
 
             <h2>Children's Privacy</h2>

@@ -39,11 +39,23 @@ cloud sync, advertising, analytics, or network communication.
 
 - Compare two BLE device signals in real time using one shared scan stream
 - Signal Stability Score in Signal Tracker and device comparison
+- Advertisement Inspector to inspect BLE advertisement data and raw bytes
+- BLE Environment Analyzer to summarize nearby BLE device activity and signal distribution
+- User-triggered CSV export for current Signal Tracker, comparison, and environment sessions
 
 The Signal Stability Score is an app-defined relative metric based on recent RSSI variation,
 signal range, sudden changes, and signal continuity. It is not an official Bluetooth standard
 measurement. Comparison and stability samples remain in memory only and are limited to the recent
 30-second analysis window.
+
+Advertisement inspection and environment summaries use only the current in-memory scan session.
+BLE Activity is an app-defined device-count summary, not an RF interference or spectrum
+measurement.
+
+CSV files are generated locally from the current in-memory session and shared only when the user
+chooses a destination through Android's share sheet. The app does not upload exports and does not
+maintain an export history or database. Some Android-provided BLE addresses included in an
+environment export may be randomized by the device or operating system.
 
 ## BLE scanning and permissions
 
@@ -64,7 +76,9 @@ connection, foreground service, notification, or background scan is used.
 ## Privacy design
 
 Scan results, addresses, manufacturer data, service UUIDs, selected devices, and RSSI histories are
-not uploaded or permanently stored. User settings are stored locally with Preferences DataStore.
+not uploaded or automatically stored as app history. A user can explicitly create a temporary CSV
+file for the current session and choose its destination through Android's share sheet; the app does
+not upload the file or retain an export archive. User settings are stored locally with Preferences DataStore.
 The language choice uses Android/AndroidX per-app locale storage. A local SharedPreferences flag
 records whether Bluetooth permission was previously requested so
 the app does not repeatedly prompt. App backup is disabled and backup/transfer rules exclude app

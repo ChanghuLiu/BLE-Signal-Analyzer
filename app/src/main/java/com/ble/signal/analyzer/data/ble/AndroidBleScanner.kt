@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import androidx.core.util.size
 import com.ble.signal.analyzer.model.BleDeviceInfo
 import com.ble.signal.analyzer.model.BleManufacturerDataEntry
+import com.ble.signal.analyzer.model.BleServiceDataEntry
 import java.util.Locale
 
 class AndroidBleScanner(context: Context) {
@@ -173,6 +174,20 @@ class AndroidBleScanner(context: Context) {
                 }.getOrNull()
             }
             .distinct()
+        val serviceDataEntries = record?.serviceData
+            .orEmpty()
+            .mapNotNull { (parcelUuid, data) ->
+                val normalizedUuid = runCatching {
+                    BleServiceUuidFormatter.normalize(parcelUuid.uuid.toString())
+                }.getOrNull() ?: return@mapNotNull null
+                BleServiceDataEntry(
+                    serviceUuid = normalizedUuid,
+                    data = data.copyOf(),
+                )
+            }
+            .sortedBy(BleServiceDataEntry::serviceUuid)
+        val advertisementFlags = record?.advertiseFlags?.takeUnless { it < 0 }
+        val rawAdvertisementBytes = record?.bytes?.copyOf()
 
         return BleDeviceInfo(
             id = address ?: "device-${device.hashCode()}",
@@ -187,6 +202,10 @@ class AndroidBleScanner(context: Context) {
             isConnectable = isConnectable,
             lastSeen = System.currentTimeMillis(),
             manufacturerDataEntries = manufacturerEntries,
+            localName = advertisedName,
+            serviceDataEntries = serviceDataEntries,
+            advertisementFlags = advertisementFlags,
+            rawAdvertisementBytes = rawAdvertisementBytes,
         )
     }
 }

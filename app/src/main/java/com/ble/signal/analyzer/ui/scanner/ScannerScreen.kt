@@ -97,6 +97,7 @@ fun ScannerScreen(
     onSortChanged: (DeviceSortMode) -> Unit,
     onFreezeChanged: (Boolean) -> Unit,
     onDeviceSelected: (BleDeviceInfo) -> Unit,
+    onOpenEnvironment: () -> Unit,
     onOpenSettings: () -> Unit,
     onRequestBluetoothPermission: () -> Unit,
     onPermissionNotNow: () -> Unit,
@@ -257,6 +258,9 @@ fun ScannerScreen(
                                         sortModeShortLabel(sortMode),
                                     ),
                                 )
+                            }
+                            OutlinedButton(onClick = onOpenEnvironment) {
+                                Text(stringResource(R.string.ble_environment))
                             }
                             FilterChip(
                                 selected = freezeEnabled,

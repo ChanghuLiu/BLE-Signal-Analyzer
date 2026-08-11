@@ -10,8 +10,10 @@ import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.scanner.DeviceFilterMode
 import com.ble.signal.analyzer.scanner.DeviceSortMode
 import com.ble.signal.analyzer.ui.detail.DeviceDetailScreen
+import com.ble.signal.analyzer.ui.advertisement.AdvertisementInspectorScreen
 import com.ble.signal.analyzer.ui.compare.CompareDeviceSelectionScreen
 import com.ble.signal.analyzer.ui.compare.CompareDevicesScreen
+import com.ble.signal.analyzer.ui.environment.BleEnvironmentScreen
 import com.ble.signal.analyzer.ui.info.AboutScreen
 import com.ble.signal.analyzer.ui.info.HowBleSignalsWorkScreen
 import com.ble.signal.analyzer.ui.info.PrivacyPolicyScreen
@@ -30,6 +32,12 @@ fun BleSignalAnalyzerApp(
     onDeviceSelected: (BleDeviceInfo) -> Unit,
     onOpenTracker: () -> Unit,
     onOpenCompare: () -> Unit,
+    onOpenAdvertisementInspector: () -> Unit,
+    onRefreshAdvertisementInspector: () -> Unit,
+    onOpenEnvironment: () -> Unit,
+    onExportSignalSession: () -> Unit,
+    onExportComparison: () -> Unit,
+    onExportEnvironment: () -> Unit,
     onComparisonDeviceSelected: (BleDeviceInfo) -> Unit,
     onResumeComparison: () -> Unit,
     onResumeTracking: () -> Unit,
@@ -81,6 +89,7 @@ fun BleSignalAnalyzerApp(
             onSortChanged = onSortChanged,
             onFreezeChanged = onFreezeChanged,
             onDeviceSelected = onDeviceSelected,
+            onOpenEnvironment = onOpenEnvironment,
             onOpenSettings = onOpenSettings,
             onRequestBluetoothPermission = onRequestBluetoothPermission,
             onPermissionNotNow = onPermissionNotNow,
@@ -95,8 +104,28 @@ fun BleSignalAnalyzerApp(
                 onBack = onBack,
                 onTrackSignal = onOpenTracker,
                 onCompare = onOpenCompare,
+                onOpenAdvertisementInspector = onOpenAdvertisementInspector,
             )
         }
+
+        AppDestination.AdvertisementInspector -> uiState.selectedDevice?.let { device ->
+            AdvertisementInspectorScreen(
+                device = device,
+                isRefreshing = uiState.isAdvertisementInspectorRefreshing,
+                currentTimeMillis = uiState.advertisementInspectorTimeMillis,
+                refreshError = uiState.advertisementInspectorError,
+                onRefresh = onRefreshAdvertisementInspector,
+                onBack = onBack,
+            )
+        }
+
+        AppDestination.BleEnvironment -> BleEnvironmentScreen(
+            devices = uiState.devices,
+            isScanning = uiState.isScanning,
+            onScanAgain = onToggleScanning,
+            onExportEnvironment = onExportEnvironment,
+            onBack = onBack,
+        )
 
         AppDestination.SignalTracker -> uiState.selectedDevice?.let { device ->
             SignalTrackerScreen(
@@ -115,6 +144,7 @@ fun BleSignalAnalyzerApp(
                 onRequestBluetoothPermission = onRequestBluetoothPermission,
                 onOpenAppSettings = onOpenAppSettings,
                 onEnableBluetooth = onEnableBluetooth,
+                onExportSession = onExportSignalSession,
                 onBack = onBack,
                 onBackToScanner = onBackToScanner,
             )
@@ -143,6 +173,7 @@ fun BleSignalAnalyzerApp(
             onRequestBluetoothPermission = onRequestBluetoothPermission,
             onOpenAppSettings = onOpenAppSettings,
             onEnableBluetooth = onEnableBluetooth,
+            onExportComparison = onExportComparison,
             onBack = onBack,
             onBackToScanner = onBackToScannerFromComparison,
         )

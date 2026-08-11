@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,6 +39,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
@@ -49,6 +53,8 @@ import com.ble.signal.analyzer.R
 import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.ui.components.SectionLabel
 import com.ble.signal.analyzer.ui.theme.ThemeMode
+
+private const val SELECTION_DIALOG_LIST_MAX_HEIGHT_FRACTION = 0.6f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -392,12 +398,20 @@ private fun <T> SelectionDialog(
     onSelected: (T) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val maxListHeight = with(LocalDensity.current) {
+        LocalWindowInfo.current.containerSize.height.toDp()
+    } * SELECTION_DIALOG_LIST_MAX_HEIGHT_FRACTION
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
-            Column {
-                options.forEach { option ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = maxListHeight),
+            ) {
+                items(options) { option ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -414,7 +428,11 @@ private fun <T> SelectionDialog(
                             onClick = null,
                             modifier = Modifier.clearAndSetSemantics { },
                         )
-                        Text(labelFor(option), style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = labelFor(option),
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
                     }
                 }
             }

@@ -80,6 +80,7 @@ fun PrivacyPolicyScreen(onBack: () -> Unit) {
 
         BodyText(stringResource(R.string.privacy_permission_prompt_state))
         BodyText(stringResource(R.string.privacy_storage_summary))
+        BodyText(stringResource(R.string.privacy_export_summary))
         BodyText(stringResource(R.string.privacy_permissions))
         ContactSection()
     }
@@ -144,6 +145,9 @@ fun AboutScreen(
             stringResource(R.string.feature_ble_scanning),
             stringResource(R.string.feature_compare_devices),
             stringResource(R.string.feature_signal_stability),
+            stringResource(R.string.feature_advertisement_inspector),
+            stringResource(R.string.feature_ble_environment),
+            stringResource(R.string.feature_csv_export),
             stringResource(R.string.feature_realtime_rssi),
             stringResource(R.string.feature_signal_labels),
             stringResource(R.string.feature_trend),

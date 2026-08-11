@@ -51,6 +51,8 @@ enum class AppDestination {
     SignalTracker,
     CompareSelection,
     CompareDevices,
+    AdvertisementInspector,
+    BleEnvironment,
     Settings,
     PrivacyPolicy,
     HowBleSignalsWork,
@@ -75,6 +77,9 @@ data class AppUiState(
     val signalTrackerState: SignalTrackerState = SignalTrackerState(),
     val compareDevicesState: CompareDevicesState = CompareDevicesState(),
     val compareSelectionError: Boolean = false,
+    val isAdvertisementInspectorRefreshing: Boolean = false,
+    val advertisementInspectorTimeMillis: Long = 0L,
+    val advertisementInspectorError: BleScanErrorKind? = null,
     val isScanStarting: Boolean = false,
     val isScanning: Boolean = false,
     val hasCompletedScan: Boolean = false,
@@ -110,6 +115,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var scanTimeoutJob: Job? = null
     private var trackerStatusJob: Job? = null
     private var comparisonStatusJob: Job? = null
+    private var advertisementInspectorStatusJob: Job? = null
     private val trackerStatistics = SignalStatisticsAccumulator()
     private val comparisonStatisticsA = SignalStatisticsAccumulator()
     private val comparisonStatisticsB = SignalStatisticsAccumulator()
@@ -178,6 +184,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 else -> TrackingUnavailableReason.BLUETOOTH_DISABLED
             }
             stopComparisonForUnavailable(reason)
+        }
+        if (currentState.isAdvertisementInspectorRefreshing && environmentUnavailable) {
+            stopAdvertisementInspection(
+                error = when {
+                    !bleSupported -> BleScanErrorKind.FeatureUnsupported
+                    permissionState != BluetoothPermissionState.Granted ->
+                        BleScanErrorKind.PermissionRequired
+
+                    else -> BleScanErrorKind.BluetoothDisabled
+                },
+            )
         }
 
         mutableUiState.update { state ->
@@ -868,6 +885,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (mutableUiState.value.compareDevicesState.isTracking) {
             stopComparisonForUnavailable(TrackingUnavailableReason.APP_BACKGROUNDED)
         }
+        if (mutableUiState.value.isAdvertisementInspectorRefreshing) {
+            stopAdvertisementInspection()
+        }
     }
 
     fun setFreezeEnabled(enabled: Boolean) {
@@ -916,6 +936,120 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun openTracker() {
         val device = mutableUiState.value.selectedDevice ?: return
         startSignalTracking(device)
+    }
+
+    fun openAdvertisementInspector() {
+        val device = mutableUiState.value.selectedDevice ?: return
+        stopScanning(markCompleted = false)
+        releaseSignalTrackingScanner()
+        releaseComparisonScanner()
+        startAdvertisementInspection(device)
+    }
+
+    fun refreshAdvertisementInspector() {
+        val state = mutableUiState.value
+        if (state.destination != AppDestination.AdvertisementInspector) return
+        state.selectedDevice?.let(::startAdvertisementInspection)
+    }
+
+    private fun startAdvertisementInspection(device: BleDeviceInfo) {
+        releaseAdvertisementInspectorScanner()
+        val currentState = mutableUiState.value
+        val unavailableError = when {
+            !currentState.bleSupported -> BleScanErrorKind.FeatureUnsupported
+            currentState.permissionState != BluetoothPermissionState.Granted ->
+                BleScanErrorKind.PermissionRequired
+
+            !currentState.bluetoothEnabled -> BleScanErrorKind.BluetoothDisabled
+            else -> null
+        }
+        mutableUiState.update { state ->
+            state.copy(
+                destination = AppDestination.AdvertisementInspector,
+                selectedDevice = device,
+                isAdvertisementInspectorRefreshing = unavailableError == null,
+                advertisementInspectorTimeMillis = System.currentTimeMillis(),
+                advertisementInspectorError = unavailableError,
+            )
+        }
+        if (unavailableError != null) return
+
+        when (val result = bleScanner.startScan(
+            onDeviceFound = ::handleAdvertisementInspectorDeviceFound,
+            onFailure = ::handleAdvertisementInspectorFailure,
+        )) {
+            BleScanStartResult.Started -> startAdvertisementInspectorStatusTicker()
+            is BleScanStartResult.Failed -> handleAdvertisementInspectorFailure(result.error)
+        }
+    }
+
+    private fun handleAdvertisementInspectorDeviceFound(incoming: BleDeviceInfo) {
+        mutableUiState.update { state ->
+            val selected = state.selectedDevice ?: return@update state
+            if (
+                state.destination != AppDestination.AdvertisementInspector ||
+                !state.isAdvertisementInspectorRefreshing ||
+                !selected.matchesIdentity(incoming)
+            ) {
+                return@update state
+            }
+            val merged = selected.mergeLatest(incoming)
+            val existingIndex = state.devices.indexOfFirst { it.id == merged.id }
+            val updatedDevices = if (existingIndex >= 0) {
+                state.devices.toMutableList().apply { set(existingIndex, merged) }
+            } else {
+                state.devices + merged
+            }
+            state.copy(
+                devices = updatedDevices,
+                selectedDevice = merged,
+                advertisementInspectorTimeMillis = incoming.lastSeen,
+                advertisementInspectorError = null,
+            ).refreshVisibleDevices()
+        }
+    }
+
+    private fun handleAdvertisementInspectorFailure(error: BleScanError) {
+        stopAdvertisementInspection(error.kind)
+    }
+
+    private fun startAdvertisementInspectorStatusTicker() {
+        advertisementInspectorStatusJob?.cancel()
+        advertisementInspectorStatusJob = viewModelScope.launch {
+            while (true) {
+                delay(SignalTrackerConfig.STATUS_TICK_MILLIS)
+                mutableUiState.update { state ->
+                    if (
+                        state.destination != AppDestination.AdvertisementInspector ||
+                        !state.isAdvertisementInspectorRefreshing
+                    ) {
+                        return@update state
+                    }
+                    state.copy(advertisementInspectorTimeMillis = System.currentTimeMillis())
+                }
+            }
+        }
+    }
+
+    private fun stopAdvertisementInspection(error: BleScanErrorKind? = null) {
+        releaseAdvertisementInspectorScanner()
+        mutableUiState.update { state ->
+            state.copy(
+                isAdvertisementInspectorRefreshing = false,
+                advertisementInspectorTimeMillis = System.currentTimeMillis(),
+                advertisementInspectorError = error,
+            )
+        }
+    }
+
+    private fun releaseAdvertisementInspectorScanner() {
+        advertisementInspectorStatusJob?.cancel()
+        advertisementInspectorStatusJob = null
+        bleScanner.stopScan()
+    }
+
+    fun openBleEnvironment() {
+        mutableUiState.update { it.copy(destination = AppDestination.BleEnvironment) }
     }
 
     fun resumeSignalTracking() {
@@ -1035,6 +1169,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (currentDestination == AppDestination.CompareDevices) {
             stopComparisonForNavigation()
         }
+        if (currentDestination == AppDestination.AdvertisementInspector) {
+            stopAdvertisementInspection()
+        }
         mutableUiState.update { state ->
             if (state.destination.isInformationDestination()) {
                 return@update state.navigateBackFromInformation()
@@ -1044,8 +1181,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     AppDestination.SignalTracker -> AppDestination.DeviceDetail
                     AppDestination.CompareDevices,
                     AppDestination.CompareSelection,
+                    AppDestination.AdvertisementInspector,
                     -> AppDestination.DeviceDetail
 
+                    AppDestination.BleEnvironment,
                     AppDestination.DeviceDetail,
                     AppDestination.Settings,
                     AppDestination.Scanner,
@@ -1141,6 +1280,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         scanTimeoutJob?.cancel()
         trackerStatusJob?.cancel()
         comparisonStatusJob?.cancel()
+        advertisementInspectorStatusJob?.cancel()
         bleScanner.stopScan()
     }
 }
@@ -1222,7 +1362,16 @@ private fun BleDeviceInfo.mergeLatest(latest: BleDeviceInfo): BleDeviceInfo = la
     manufacturerDataEntries = latest.manufacturerDataEntries.ifEmpty {
         manufacturerDataEntries
     },
+    localName = latest.localName ?: localName,
     serviceUuids = latest.serviceUuids.ifEmpty { serviceUuids },
+    serviceDataEntries = latest.serviceDataEntries.ifEmpty { serviceDataEntries },
+    advertisementFlags = latest.advertisementFlags ?: advertisementFlags,
+    rawAdvertisementBytes = latest.rawAdvertisementBytes ?: rawAdvertisementBytes,
     txPower = latest.txPower ?: txPower,
     isConnectable = latest.isConnectable ?: isConnectable,
 )
+
+private fun BleDeviceInfo.matchesIdentity(other: BleDeviceInfo): Boolean =
+    id == other.id || (
+        address != null && other.address != null && address.equals(other.address, ignoreCase = true)
+    )

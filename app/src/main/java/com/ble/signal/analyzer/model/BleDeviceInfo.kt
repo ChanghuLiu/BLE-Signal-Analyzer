@@ -13,10 +13,19 @@ data class BleDeviceInfo(
     val isConnectable: Boolean?,
     val lastSeen: Long,
     val manufacturerDataEntries: List<BleManufacturerDataEntry> = emptyList(),
+    val localName: String? = null,
+    val serviceDataEntries: List<BleServiceDataEntry> = emptyList(),
+    val advertisementFlags: Int? = null,
+    val rawAdvertisementBytes: ByteArray? = null,
 )
 
 data class BleManufacturerDataEntry(
     val manufacturerId: Int,
+    val data: ByteArray,
+)
+
+data class BleServiceDataEntry(
+    val serviceUuid: String,
     val data: ByteArray,
 )
 

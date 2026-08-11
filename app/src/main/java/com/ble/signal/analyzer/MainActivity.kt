@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +25,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.model.BleDeviceInfo
+import com.ble.signal.analyzer.export.ComparisonExportFormatter
+import com.ble.signal.analyzer.export.CsvExportDocument
+import com.ble.signal.analyzer.export.CsvExportSharer
+import com.ble.signal.analyzer.export.EnvironmentExportFormatter
+import com.ble.signal.analyzer.export.SessionExportFormatter
 import com.ble.signal.analyzer.ui.BleSignalAnalyzerApp
 import com.ble.signal.analyzer.ui.theme.BLESignalAnalyzerTheme
 import com.ble.signal.analyzer.data.ble.BleScanErrorKind
@@ -32,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private var bluetoothReceiverRegistered = false
     private var permissionRequestInFlight = false
+    private val csvExportSharer by lazy { CsvExportSharer(this) }
 
     private val permissionPreferences by lazy {
         getSharedPreferences(PERMISSION_PREFERENCES, MODE_PRIVATE)
@@ -86,6 +93,14 @@ class MainActivity : AppCompatActivity() {
                     onDeviceSelected = viewModel::openDevice,
                     onOpenTracker = ::openTrackerAfterEnvironmentCheck,
                     onOpenCompare = viewModel::openCompareSelection,
+                    onOpenAdvertisementInspector =
+                        ::openAdvertisementInspectorAfterEnvironmentCheck,
+                    onRefreshAdvertisementInspector =
+                        ::refreshAdvertisementInspectorAfterEnvironmentCheck,
+                    onOpenEnvironment = viewModel::openBleEnvironment,
+                    onExportSignalSession = ::exportSignalSession,
+                    onExportComparison = ::exportComparison,
+                    onExportEnvironment = ::exportEnvironment,
                     onComparisonDeviceSelected = ::selectComparisonAfterEnvironmentCheck,
                     onResumeComparison = ::resumeComparisonAfterEnvironmentCheck,
                     onResumeTracking = ::resumeTrackingAfterEnvironmentCheck,
@@ -211,6 +226,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.openTracker()
     }
 
+    private fun openAdvertisementInspectorAfterEnvironmentCheck() {
+        refreshBluetoothEnvironment()
+        viewModel.openAdvertisementInspector()
+    }
+
+    private fun refreshAdvertisementInspectorAfterEnvironmentCheck() {
+        refreshBluetoothEnvironment()
+        viewModel.refreshAdvertisementInspector()
+    }
+
     private fun resumeTrackingAfterEnvironmentCheck() {
         refreshBluetoothEnvironment()
         viewModel.resumeSignalTracking()
@@ -224,6 +249,45 @@ class MainActivity : AppCompatActivity() {
     private fun resumeComparisonAfterEnvironmentCheck() {
         refreshBluetoothEnvironment()
         viewModel.resumeComparison()
+    }
+
+    private fun exportSignalSession() {
+        shareCsvExport(
+            document = SessionExportFormatter.format(viewModel.uiState.value.signalTrackerState),
+            emptyMessageResource = R.string.no_signal_data_to_export,
+        )
+    }
+
+    private fun exportComparison() {
+        shareCsvExport(
+            document = ComparisonExportFormatter.format(
+                viewModel.uiState.value.compareDevicesState,
+            ),
+            emptyMessageResource = R.string.no_comparison_data_to_export,
+        )
+    }
+
+    private fun exportEnvironment() {
+        shareCsvExport(
+            document = EnvironmentExportFormatter.format(viewModel.uiState.value.devices),
+            emptyMessageResource = R.string.no_environment_data_to_export,
+        )
+    }
+
+    private fun shareCsvExport(document: CsvExportDocument?, emptyMessageResource: Int) {
+        if (document == null) {
+            Toast.makeText(this, emptyMessageResource, Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            csvExportSharer.share(
+                document = document,
+                chooserTitle = getString(R.string.share_csv_export),
+                nowMillis = System.currentTimeMillis(),
+            )
+        } catch (_: Exception) {
+            Toast.makeText(this, R.string.csv_export_failed, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun openAppSettings() {

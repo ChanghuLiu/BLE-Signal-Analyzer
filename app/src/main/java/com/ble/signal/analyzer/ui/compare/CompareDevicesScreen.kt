@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -270,11 +271,29 @@ fun CompareDevicesScreen(
     onRequestBluetoothPermission: () -> Unit,
     onOpenAppSettings: () -> Unit,
     onEnableBluetooth: () -> Unit,
+    onExportComparison: () -> Unit,
     onBack: () -> Unit,
     onBackToScanner: () -> Unit,
 ) {
     val deviceA = state.deviceA.device ?: return
     val deviceB = state.deviceB.device ?: return
+    val deviceARoleLabel = stringResource(R.string.device_a)
+    val deviceBRoleLabel = stringResource(R.string.device_b)
+    val localizedGenericNames = listOf(
+        stringResource(R.string.unknown_device),
+        deviceARoleLabel,
+        deviceBRoleLabel,
+    )
+    val deviceALabel = formatComparisonDeviceLabel(
+        roleLabel = deviceARoleLabel,
+        deviceName = deviceA.name,
+        localizedGenericNames = localizedGenericNames,
+    )
+    val deviceBLabel = formatComparisonDeviceLabel(
+        roleLabel = deviceBRoleLabel,
+        deviceName = deviceB.name,
+        localizedGenericNames = localizedGenericNames,
+    )
     KeepComparisonScreenAwake(keepScreenAwake && state.isTracking)
 
     Scaffold(
@@ -313,26 +332,30 @@ fun CompareDevicesScreen(
             )
 
             ComparedDeviceSummary(
-                label = stringResource(R.string.device_a),
+                label = deviceALabel,
                 signal = state.deviceA,
             )
             ComparedDeviceSummary(
-                label = stringResource(R.string.device_b),
+                label = deviceBLabel,
                 signal = state.deviceB,
             )
 
             SectionLabel(text = stringResource(R.string.signal_difference))
-            SignalDifferenceCard(state = state)
+            SignalDifferenceCard(
+                state = state,
+                deviceALabel = deviceALabel,
+                deviceBLabel = deviceBLabel,
+            )
 
             SectionLabel(text = stringResource(R.string.signal_stability_section))
             Text(
-                text = stringResource(R.string.device_a),
+                text = deviceALabel,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
             SignalStabilityCard(result = state.deviceA.stability)
             Text(
-                text = stringResource(R.string.device_b),
+                text = deviceBLabel,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -343,17 +366,35 @@ fun CompareDevicesScreen(
                 samplesA = state.deviceA.samples,
                 samplesB = state.deviceB.samples,
                 graphTimeMillis = state.graphTimeMillis,
+                deviceALabel = deviceALabel,
+                deviceBLabel = deviceBLabel,
             )
 
             SectionLabel(text = stringResource(R.string.comparison_statistics))
             ComparisonStatisticsCard(
-                label = stringResource(R.string.device_a),
+                label = deviceALabel,
                 signal = state.deviceA,
             )
             ComparisonStatisticsCard(
-                label = stringResource(R.string.device_b),
+                label = deviceBLabel,
                 signal = state.deviceB,
             )
+            val hasComparisonData = state.deviceA.samples.isNotEmpty() ||
+                state.deviceB.samples.isNotEmpty()
+            OutlinedButton(
+                onClick = onExportComparison,
+                enabled = hasComparisonData,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.export_comparison))
+            }
+            if (!hasComparisonData) {
+                Text(
+                    text = stringResource(R.string.no_comparison_data_to_export),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
         }
     }
@@ -383,6 +424,8 @@ private fun ComparedDeviceSummary(
                 text = label,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -390,13 +433,6 @@ private fun ComparedDeviceSummary(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = device.name ?: stringResource(R.string.unknown_device),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
                     Text(
                         text = manufacturerDisplayName(device.manufacturerId),
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -440,9 +476,11 @@ private fun ComparedDeviceSummary(
 }
 
 @Composable
-private fun SignalDifferenceCard(state: CompareDevicesState) {
-    val deviceAName = state.deviceA.device?.name ?: stringResource(R.string.device_a)
-    val deviceBName = state.deviceB.device?.name ?: stringResource(R.string.device_b)
+private fun SignalDifferenceCard(
+    state: CompareDevicesState,
+    deviceALabel: String,
+    deviceBLabel: String,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -464,13 +502,13 @@ private fun SignalDifferenceCard(state: CompareDevicesState) {
                 StrongerSignal.DEVICE_A -> stringResource(
                     R.string.stronger_signal_value,
                     stringResource(R.string.stronger_signal),
-                    "${stringResource(R.string.device_a)} — $deviceAName",
+                    deviceALabel,
                 )
 
                 StrongerSignal.DEVICE_B -> stringResource(
                     R.string.stronger_signal_value,
                     stringResource(R.string.stronger_signal),
-                    "${stringResource(R.string.device_b)} — $deviceBName",
+                    deviceBLabel,
                 )
 
                 StrongerSignal.SIMILAR -> stringResource(R.string.signals_are_similar)
@@ -567,6 +605,8 @@ private fun ComparisonGraph(
     samplesA: List<RssiSample>,
     samplesB: List<RssiSample>,
     graphTimeMillis: Long,
+    deviceALabel: String,
+    deviceBLabel: String,
 ) {
     val colorA = MaterialTheme.colorScheme.primary
     val colorB = MaterialTheme.colorScheme.tertiary
@@ -588,19 +628,21 @@ private fun ComparisonGraph(
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 GraphLegendItem(
-                    label = stringResource(R.string.device_a),
+                    label = deviceALabel,
                     lineDescription = stringResource(R.string.solid_line),
                     color = colorA,
                     dashed = false,
+                    modifier = Modifier.weight(1f),
                 )
                 GraphLegendItem(
-                    label = stringResource(R.string.device_b),
+                    label = deviceBLabel,
                     lineDescription = stringResource(R.string.dashed_line),
                     color = colorB,
                     dashed = true,
+                    modifier = Modifier.weight(1f),
                 )
             }
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -741,11 +783,12 @@ private fun GraphLegendItem(
     lineDescription: String,
     color: Color,
     dashed: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.semantics {
+        modifier = modifier.semantics {
             contentDescription = "$label, $lineDescription"
         },
     ) {
@@ -762,7 +805,13 @@ private fun GraphLegendItem(
                 },
             )
         }
-        Text(label, fontWeight = FontWeight.Bold)
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

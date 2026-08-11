@@ -27,6 +27,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -102,6 +103,7 @@ fun SignalTrackerScreen(
     onRequestBluetoothPermission: () -> Unit,
     onOpenAppSettings: () -> Unit,
     onEnableBluetooth: () -> Unit,
+    onExportSession: () -> Unit,
     onBack: () -> Unit,
     onBackToScanner: () -> Unit,
 ) {
@@ -260,6 +262,23 @@ fun SignalTrackerScreen(
                 average = trackerState.averageRssi,
                 maximum = trackerState.maxRssi,
             )
+            OutlinedButton(
+                onClick = onExportSession,
+                enabled = trackerState.samples.isNotEmpty(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+            ) {
+                Text(stringResource(R.string.export_session))
+            }
+            if (trackerState.samples.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_signal_data_to_export),
+                    modifier = Modifier.padding(top = 6.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             Spacer(modifier = Modifier.height(28.dp))
             SectionLabel(text = stringResource(R.string.proximity_alert_section))
