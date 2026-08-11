@@ -50,7 +50,8 @@ media/storage, contacts, phone, or broad package-query permission is present.
 - Support email: `artbyte@126.com`
 - BLE scan processing: local and memory-only
 - BLE history: not persisted
-- Preferences: stored locally with DataStore; one permission-prompt flag uses SharedPreferences
+- Preferences: app settings use DataStore; language uses Android/AndroidX per-app locale storage;
+  one permission-prompt flag uses SharedPreferences
 - App backup: disabled with explicit backup/transfer exclusions
 - Network upload: none
 - Data collection: review the verified technical facts in

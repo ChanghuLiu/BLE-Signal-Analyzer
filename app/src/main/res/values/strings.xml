@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">BLE Signal Analyzer</string>
-    <string name="support_email">artbyte@126.com</string>
+    <string name="app_name" translatable="false">BLE Signal Analyzer</string>
+    <string name="support_email" translatable="false">artbyte@126.com</string>
 
     <string name="settings_title">Settings</string>
     <string name="privacy_policy_title">Privacy Policy</string>
@@ -14,7 +14,18 @@
     <string name="enabled_state">On</string>
     <string name="disabled_state">Off</string>
     <string name="unknown_device">Unknown Device</string>
+    <string name="unknown_manufacturer">Unknown manufacturer</string>
     <string name="not_available">Not available</string>
+    <string name="signal_quality_excellent">Excellent</string>
+    <string name="signal_quality_strong">Strong</string>
+    <string name="signal_quality_good">Good</string>
+    <string name="signal_quality_fair">Fair</string>
+    <string name="signal_quality_weak">Weak</string>
+    <string name="proximity_very_close">Very Close</string>
+    <string name="proximity_close">Close</string>
+    <string name="proximity_nearby">Nearby</string>
+    <string name="proximity_weak">Weak</string>
+    <string name="proximity_very_weak">Very Weak</string>
 
     <string name="settings_scan_section">SCAN</string>
     <string name="settings_display_section">DISPLAY</string>
@@ -37,6 +48,22 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="language">Language</string>
+    <string name="select_language">Select language</string>
+    <string name="language_system_default">System default</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_french" translatable="false">Français</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_spanish" translatable="false">Español</string>
+    <string name="language_portuguese_brazil" translatable="false">Português (Brasil)</string>
+    <string name="language_simplified_chinese" translatable="false">简体中文</string>
+    <string name="language_traditional_chinese" translatable="false">繁體中文</string>
+    <string name="language_japanese" translatable="false">日本語</string>
+    <string name="language_korean" translatable="false">한국어</string>
+    <string name="language_arabic" translatable="false">العربية</string>
+    <string name="language_turkish" translatable="false">Türkçe</string>
+    <string name="language_indonesian" translatable="false">Bahasa Indonesia</string>
+    <string name="language_hindi" translatable="false">हिन्दी</string>
     <string name="signal_descriptions">Signal descriptions</string>
     <string name="signal_descriptions_description">Show labels such as Excellent, Good, and Weak</string>
     <string name="app_version">App Version</string>
@@ -55,8 +82,18 @@
     <string name="open_android_settings">Open Settings</string>
     <string name="enable_bluetooth">Enable Bluetooth</string>
     <string name="filter">Filter</string>
+    <string name="filter_all_devices">All devices</string>
+    <string name="filter_named_devices">Named devices only</string>
+    <string name="filter_strong_signals">Strong signals only</string>
+    <string name="filter_connectable_devices">Connectable only</string>
     <string name="filter_active_count">Filter (%1$d)</string>
     <string name="sort_active">Sort: %1$s</string>
+    <string name="sort_signal_strength">Signal strength</string>
+    <string name="sort_device_name">Device name</string>
+    <string name="sort_last_seen">Last seen</string>
+    <string name="sort_short_signal">Signal</string>
+    <string name="sort_short_name">Name</string>
+    <string name="sort_short_recent">Recent</string>
     <string name="freeze">Freeze</string>
     <plurals name="ble_devices_nearby">
         <item quantity="one">%1$d BLE device nearby</item>
@@ -80,6 +117,16 @@
     <string name="no_ble_devices_found">No BLE devices found</string>
     <string name="no_ble_devices_help">Try:\n• Move closer to a Bluetooth device\n• Make sure the BLE device is powered on\n• Scan again</string>
     <string name="scan_failed">Scan failed</string>
+    <string name="scan_error_already_running">A Bluetooth scan is already running.</string>
+    <string name="scan_error_registration_failed">Bluetooth scanning could not start. Please try again.</string>
+    <string name="scan_error_internal">Bluetooth scanning encountered an internal error.</string>
+    <string name="scan_error_feature_unsupported">This Bluetooth scan mode is not supported on this device.</string>
+    <string name="scan_error_resources_unavailable">Bluetooth scanning resources are temporarily unavailable.</string>
+    <string name="scan_error_too_frequent">Bluetooth scans are starting too frequently. Wait a moment and try again.</string>
+    <string name="scan_error_permission_required">Bluetooth permission is required before scanning can start.</string>
+    <string name="scan_error_bluetooth_disabled">Turn on Bluetooth before starting a scan.</string>
+    <string name="scan_error_scanner_unavailable">Bluetooth scanning is unavailable on this device.</string>
+    <string name="scan_error_unknown">Bluetooth scan failed. Please try again.</string>
     <string name="scanning">Scanning…</string>
     <string name="scan_complete">Scan complete</string>
     <string name="ready_to_scan">Ready to scan</string>
@@ -94,6 +141,7 @@
     <string name="now">Now</string>
     <string name="seconds_ago">%1$ds ago</string>
     <string name="minutes_ago">%1$dm ago</string>
+    <string name="device_card_accessibility">%1$s, %2$s, signal %3$d dBm, %4$s, last seen %5$s</string>
 
     <string name="signal_section">SIGNAL</string>
     <string name="device_section">DEVICE</string>
@@ -104,6 +152,11 @@
     <string name="getting_weaker">Getting weaker</string>
     <string name="stable">Stable</string>
     <string name="collecting_signal">Collecting signal…</string>
+    <string name="trend_stronger_format">↑ %1$s</string>
+    <string name="trend_weaker_format">↓ %1$s</string>
+    <string name="trend_stable_format">— %1$s</string>
+    <string name="trend_collecting_format">• %1$s</string>
+    <string name="signal_measurement_accessibility">%1$d dBm, %2$s, %3$s</string>
     <string name="name">Name</string>
     <string name="manufacturer">Manufacturer</string>
     <string name="last_seen">Last Seen</string>
@@ -127,6 +180,9 @@
     <string name="back_to_scanner_button">Back to Scanner</string>
     <string name="resume_tracking">Resume Tracking</string>
     <string name="tracking_paused">Tracking paused</string>
+    <string name="tracking_permission_required">Bluetooth permission is required to track this signal.</string>
+    <string name="tracking_permission_lost">Bluetooth permission is no longer available.</string>
+    <string name="tracking_paused_background">Tracking paused when the app left the foreground.</string>
     <string name="device_signal_not_detected">Device signal not detected</string>
     <string name="device_signal_not_detected_description">No advertisement has been received from this device recently.</string>
     <string name="signal_temporarily_unavailable">Signal temporarily unavailable</string>
@@ -141,6 +197,9 @@
     <string name="alert_ready">Alert ready</string>
     <string name="move_away_to_rearm">Move away until the signal weakens to re-arm.</string>
     <string name="graph_accessibility_description">Live RSSI graph from −100 to −30 dBm for the last 30 seconds</string>
+    <string name="current_signal_accessibility">%1$d dBm, %2$s signal</string>
+    <string name="graph_30_seconds_ago">−30s</string>
+    <string name="graph_15_seconds_ago">−15s</string>
 
     <string name="privacy_intro">BLE Signal Analyzer scans Bluetooth Low Energy devices visible to the user’s Android device. Bluetooth scanning occurs locally on the device.</string>
     <string name="privacy_app_does_not">The app does not:</string>
@@ -160,12 +219,13 @@
     <string name="privacy_service_uuids">Service UUIDs</string>
     <string name="privacy_device_address">Device address</string>
     <string name="privacy_tx_power">Tx Power</string>
-    <string name="privacy_settings_intro">User preferences may be stored locally on the device using Android DataStore. These preferences include:</string>
+    <string name="privacy_settings_intro">User preferences are stored locally on the device. App settings use Android DataStore, while the language choice uses Android’s per-app language support. These preferences include:</string>
     <string name="privacy_theme">Theme</string>
     <string name="privacy_scan_duration">Scan duration</string>
     <string name="privacy_minimum_rssi">Minimum RSSI</string>
     <string name="privacy_signal_preferences">Signal display preferences</string>
     <string name="privacy_alert_threshold">Alert threshold</string>
+    <string name="privacy_language_preference">Language preference</string>
     <string name="privacy_permission_prompt_state">The app also stores a local flag indicating whether Bluetooth permission has already been requested. This prevents repeated automatic permission prompts.</string>
     <string name="privacy_storage_summary">No backend server or cloud service is used. BLE scan history is not permanently stored.</string>
     <string name="privacy_permissions">Bluetooth permissions are used only to provide BLE scanning and signal analysis. On Android 11 and earlier, Android may require location permission for BLE scanning. BLE Signal Analyzer requests that permission only because of this platform requirement and does not derive or store the user’s location.</string>

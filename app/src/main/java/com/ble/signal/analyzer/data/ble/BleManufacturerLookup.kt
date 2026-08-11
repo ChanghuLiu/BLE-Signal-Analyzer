@@ -22,12 +22,7 @@ object BleManufacturerLookup {
 
     fun nameFor(manufacturerId: Int): String? = companyNames[manufacturerId]
 
-    fun displayNameFor(manufacturerId: Int?): String = when (manufacturerId) {
-        null -> "Not available"
-        else -> nameFor(manufacturerId) ?: "Unknown manufacturer"
-    }
-
-    fun formatId(manufacturerId: Int?): String = manufacturerId?.let {
+    fun formatId(manufacturerId: Int?): String? = manufacturerId?.let {
         String.format(Locale.ROOT, "0x%04X", it)
-    } ?: "Not available"
+    }
 }

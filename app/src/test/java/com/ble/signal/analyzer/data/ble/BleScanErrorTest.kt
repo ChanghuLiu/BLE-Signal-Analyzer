@@ -8,7 +8,7 @@ import org.junit.Test
 
 class BleScanErrorTest {
     @Test
-    fun commonPlatformCodes_haveFriendlyMessages() {
+    fun commonPlatformCodes_mapToStableKinds() {
         val cases = mapOf(
             ScanCallback.SCAN_FAILED_ALREADY_STARTED to BleScanErrorKind.AlreadyRunning,
             ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED to
@@ -25,16 +25,14 @@ class BleScanErrorTest {
         cases.forEach { (code, expectedKind) ->
             val error = BleScanErrorMapper.fromPlatformCode(code)
             assertEquals(expectedKind, error.kind)
-            assertFalse(error.userMessage.contains(code.toString()))
         }
     }
 
     @Test
-    fun unknownPlatformCode_usesGenericRecoveryMessage() {
+    fun unknownPlatformCode_usesGenericKind() {
         val error = BleScanErrorMapper.fromPlatformCode(Int.MAX_VALUE)
 
         assertEquals(BleScanErrorKind.Unknown, error.kind)
-        assertEquals("Bluetooth scan failed. Please try again.", error.userMessage)
     }
 
     @Test

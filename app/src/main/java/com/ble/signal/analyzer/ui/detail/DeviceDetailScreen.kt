@@ -31,8 +31,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.ble.signal.analyzer.data.ble.BleManufacturerLookup
 import com.ble.signal.analyzer.R
+import com.ble.signal.analyzer.data.ble.BleManufacturerLookup
 import com.ble.signal.analyzer.data.ble.BleServiceUuidFormatter
 import com.ble.signal.analyzer.model.BleDeviceInfo
 import com.ble.signal.analyzer.model.signalQualityFor
@@ -40,6 +40,8 @@ import com.ble.signal.analyzer.ui.components.InformationRow
 import com.ble.signal.analyzer.ui.components.SectionLabel
 import com.ble.signal.analyzer.ui.components.SignalStrengthBars
 import com.ble.signal.analyzer.ui.components.signalQualityColor
+import com.ble.signal.analyzer.ui.manufacturerDisplayName
+import com.ble.signal.analyzer.ui.signalQualityLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +52,14 @@ fun DeviceDetailScreen(
     onTrackSignal: () -> Unit,
 ) {
     val quality = signalQualityFor(device.rssi)
+    val qualityLabel = signalQualityLabel(quality)
+    val strongerTrend = stringResource(R.string.getting_stronger)
+    val measurementDescription = stringResource(
+        R.string.signal_measurement_accessibility,
+        device.rssi,
+        qualityLabel,
+        strongerTrend,
+    )
 
     Scaffold(
         topBar = {
@@ -89,8 +99,7 @@ fun DeviceDetailScreen(
                 Column(
                     modifier = Modifier
                         .clearAndSetSemantics {
-                            contentDescription = "${device.rssi} dBm, ${quality.label}, " +
-                                "Getting stronger"
+                            contentDescription = measurementDescription
                         }
                         .padding(20.dp),
                 ) {
@@ -105,8 +114,8 @@ fun DeviceDetailScreen(
                                 style = MaterialTheme.typography.displayLarge,
                             )
                             Text(
-                                text = " ${stringResource(R.string.dbm_unit)}",
-                                modifier = Modifier.padding(bottom = 8.dp),
+                                text = stringResource(R.string.dbm_unit),
+                                modifier = Modifier.padding(start = 6.dp, bottom = 8.dp),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                         }
@@ -114,14 +123,17 @@ fun DeviceDetailScreen(
                     }
                     if (showSignalDescription) {
                         Text(
-                            text = quality.label,
+                            text = qualityLabel,
                             style = MaterialTheme.typography.headlineMedium,
                             color = signalQualityColor(quality),
                             fontWeight = FontWeight.Bold,
                         )
                     }
                     Text(
-                        text = "↑ ${stringResource(R.string.getting_stronger)}",
+                        text = stringResource(
+                            R.string.trend_stronger_format,
+                            strongerTrend,
+                        ),
                         modifier = Modifier.padding(top = 6.dp),
                         style = MaterialTheme.typography.titleMedium,
                     )
@@ -152,7 +164,7 @@ fun DeviceDetailScreen(
                     )
                     InformationRow(
                         stringResource(R.string.manufacturer),
-                        BleManufacturerLookup.displayNameFor(device.manufacturerId),
+                        manufacturerDisplayName(device.manufacturerId),
                     )
                     InformationRow(
                         stringResource(R.string.last_seen),
@@ -186,11 +198,13 @@ fun DeviceDetailScreen(
                     )
                     InformationRow(
                         stringResource(R.string.manufacturer_id),
-                        BleManufacturerLookup.formatId(device.manufacturerId),
+                        BleManufacturerLookup.formatId(device.manufacturerId)
+                            ?: stringResource(R.string.not_available),
                     )
                     InformationRow(
                         stringResource(R.string.service_uuids),
-                        BleServiceUuidFormatter.formatListForDisplay(device.serviceUuids),
+                        BleServiceUuidFormatter.formatListForDisplay(device.serviceUuids)
+                            ?: stringResource(R.string.not_available),
                     )
                     InformationRow(
                         label = stringResource(R.string.tx_power),

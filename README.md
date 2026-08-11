@@ -27,6 +27,7 @@ Support contact: artbyte@126.com
 - `MainViewModel` with `StateFlow`
 - `AndroidBleScanner` around the official Android `BluetoothLeScanner` API
 - Preferences DataStore for local settings
+- AndroidX AppCompat per-app language support for 13 app languages
 - Pure Kotlin helpers for filtering, sorting, RSSI smoothing, trend calculation, statistics, and
   proximity-alert evaluation
 
@@ -53,7 +54,8 @@ connection, foreground service, notification, or background scan is used.
 
 Scan results, addresses, manufacturer data, service UUIDs, selected devices, and RSSI histories are
 not uploaded or permanently stored. User settings are stored locally with Preferences DataStore.
-A local SharedPreferences flag records whether Bluetooth permission was previously requested so
+The language choice uses Android/AndroidX per-app locale storage. A local SharedPreferences flag
+records whether Bluetooth permission was previously requested so
 the app does not repeatedly prompt. App backup is disabled and backup/transfer rules exclude app
 data.
 

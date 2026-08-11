@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,11 +18,16 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.os.LocaleListCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.ui.BleSignalAnalyzerApp
 import com.ble.signal.analyzer.ui.theme.BLESignalAnalyzerTheme
+import com.ble.signal.analyzer.data.ble.BleScanErrorKind
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private var bluetoothReceiverRegistered = false
     private var permissionRequestInFlight = false
@@ -96,6 +100,8 @@ class MainActivity : ComponentActivity() {
                     onMinimumRssiChanged = viewModel::setMinimumRssi,
                     onKeepScreenAwakeChanged = viewModel::setKeepScreenAwake,
                     onThemeChanged = viewModel::setThemeMode,
+                    currentLanguage = currentAppLanguage(),
+                    onLanguageChanged = ::setAppLanguage,
                     onSignalDescriptionsChanged = viewModel::setSignalDescriptions,
                     onProximityAlertThresholdChanged =
                         viewModel::setProximityAlertThreshold,
@@ -184,9 +190,7 @@ class MainActivity : ComponentActivity() {
         try {
             enableBluetoothLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         } catch (_: SecurityException) {
-            viewModel.showScanError(
-                "Bluetooth permission is required before Bluetooth can be enabled.",
-            )
+            viewModel.showScanError(BleScanErrorKind.PermissionRequired)
             refreshBluetoothEnvironment()
         }
     }
@@ -212,6 +216,16 @@ class MainActivity : ComponentActivity() {
             Uri.fromParts("package", packageName, null),
         )
         startActivity(intent)
+    }
+
+    private fun currentAppLanguage(): AppLanguage = AppLanguage.fromLanguageTags(
+        AppCompatDelegate.getApplicationLocales().toLanguageTags(),
+    )
+
+    private fun setAppLanguage(language: AppLanguage) {
+        val locales = language.languageTag?.let(LocaleListCompat::forLanguageTags)
+            ?: LocaleListCompat.getEmptyLocaleList()
+        AppCompatDelegate.setApplicationLocales(locales)
     }
 
     private companion object {

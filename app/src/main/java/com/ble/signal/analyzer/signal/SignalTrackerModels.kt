@@ -1,5 +1,7 @@
 package com.ble.signal.analyzer.signal
 
+import com.ble.signal.analyzer.data.ble.BleScanErrorKind
+
 data class RssiSample(
     val timestamp: Long,
     val rssi: Int,
@@ -17,17 +19,50 @@ enum class SignalTrend {
     COLLECTING,
 }
 
-enum class ProximityLabel(val displayName: String) {
-    VERY_CLOSE("Very Close"),
-    CLOSE("Close"),
-    NEARBY("Nearby"),
-    WEAK("Weak"),
-    VERY_WEAK("Very Weak"),
+enum class ProximityLabel {
+    VERY_CLOSE,
+    CLOSE,
+    NEARBY,
+    WEAK,
+    VERY_WEAK,
+}
+
+enum class TrackingUnavailableReason {
+    BLE_UNSUPPORTED,
+    PERMISSION_REQUIRED,
+    PERMISSION_LOST,
+    BLUETOOTH_DISABLED,
+    APP_BACKGROUNDED,
+    SCAN_ALREADY_RUNNING,
+    SCAN_REGISTRATION_FAILED,
+    SCAN_INTERNAL_ERROR,
+    SCAN_FEATURE_UNSUPPORTED,
+    SCAN_RESOURCES_UNAVAILABLE,
+    SCAN_TOO_FREQUENT,
+    SCANNER_UNAVAILABLE,
+    SCAN_UNKNOWN,
+}
+
+fun BleScanErrorKind.toTrackingUnavailableReason(): TrackingUnavailableReason = when (this) {
+    BleScanErrorKind.AlreadyRunning -> TrackingUnavailableReason.SCAN_ALREADY_RUNNING
+    BleScanErrorKind.ApplicationRegistrationFailed ->
+        TrackingUnavailableReason.SCAN_REGISTRATION_FAILED
+    BleScanErrorKind.InternalError -> TrackingUnavailableReason.SCAN_INTERNAL_ERROR
+    BleScanErrorKind.FeatureUnsupported ->
+        TrackingUnavailableReason.SCAN_FEATURE_UNSUPPORTED
+    BleScanErrorKind.HardwareResourcesUnavailable ->
+        TrackingUnavailableReason.SCAN_RESOURCES_UNAVAILABLE
+    BleScanErrorKind.ScanningTooFrequently -> TrackingUnavailableReason.SCAN_TOO_FREQUENT
+    BleScanErrorKind.PermissionRequired -> TrackingUnavailableReason.PERMISSION_REQUIRED
+    BleScanErrorKind.BluetoothDisabled -> TrackingUnavailableReason.BLUETOOTH_DISABLED
+    BleScanErrorKind.ScannerUnavailable -> TrackingUnavailableReason.SCANNER_UNAVAILABLE
+    BleScanErrorKind.Unknown -> TrackingUnavailableReason.SCAN_UNKNOWN
 }
 
 data class SignalTrackerState(
     val deviceId: String? = null,
-    val deviceName: String = "Unknown Device",
+    val deviceAddress: String? = null,
+    val deviceName: String = "",
     val currentRssi: Int? = null,
     val smoothedRssi: Double? = null,
     val samples: List<RssiSample> = emptyList(),
@@ -43,7 +78,7 @@ data class SignalTrackerState(
     val isTracking: Boolean = false,
     val trackingStartedAt: Long? = null,
     val graphTimeMillis: Long = 0L,
-    val unavailableReason: String? = null,
+    val unavailableReason: TrackingUnavailableReason? = null,
     val proximityAlertEnabled: Boolean = false,
     val proximityAlertStatus: ProximityAlertStatus = ProximityAlertStatus.DISABLED,
     val pendingVibrationEventId: Long? = null,

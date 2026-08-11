@@ -17,7 +17,6 @@ enum class BleScanErrorKind {
 
 data class BleScanError(
     val kind: BleScanErrorKind,
-    val userMessage: String,
 )
 
 sealed interface BleScanStartResult {
@@ -28,61 +27,32 @@ sealed interface BleScanStartResult {
 
 object BleScanErrorMapper {
     fun fromPlatformCode(errorCode: Int): BleScanError = when (errorCode) {
-        ScanCallback.SCAN_FAILED_ALREADY_STARTED -> error(
-            BleScanErrorKind.AlreadyRunning,
-            "A Bluetooth scan is already running.",
-        )
+        ScanCallback.SCAN_FAILED_ALREADY_STARTED -> error(BleScanErrorKind.AlreadyRunning)
 
-        ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED -> error(
-            BleScanErrorKind.ApplicationRegistrationFailed,
-            "Bluetooth scanning could not start. Please try again.",
-        )
+        ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED ->
+            error(BleScanErrorKind.ApplicationRegistrationFailed)
 
-        ScanCallback.SCAN_FAILED_INTERNAL_ERROR -> error(
-            BleScanErrorKind.InternalError,
-            "Bluetooth scanning encountered an internal error.",
-        )
+        ScanCallback.SCAN_FAILED_INTERNAL_ERROR -> error(BleScanErrorKind.InternalError)
 
-        ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED -> error(
-            BleScanErrorKind.FeatureUnsupported,
-            "This Bluetooth scan mode is not supported on this device.",
-        )
+        ScanCallback.SCAN_FAILED_FEATURE_UNSUPPORTED ->
+            error(BleScanErrorKind.FeatureUnsupported)
 
-        ScanCallback.SCAN_FAILED_OUT_OF_HARDWARE_RESOURCES -> error(
-            BleScanErrorKind.HardwareResourcesUnavailable,
-            "Bluetooth scanning resources are temporarily unavailable.",
-        )
+        ScanCallback.SCAN_FAILED_OUT_OF_HARDWARE_RESOURCES ->
+            error(BleScanErrorKind.HardwareResourcesUnavailable)
 
-        ScanCallback.SCAN_FAILED_SCANNING_TOO_FREQUENTLY -> error(
-            BleScanErrorKind.ScanningTooFrequently,
-            "Bluetooth scans are starting too frequently. Wait a moment and try again.",
-        )
+        ScanCallback.SCAN_FAILED_SCANNING_TOO_FREQUENTLY ->
+            error(BleScanErrorKind.ScanningTooFrequently)
 
-        else -> error(
-            BleScanErrorKind.Unknown,
-            "Bluetooth scan failed. Please try again.",
-        )
+        else -> error(BleScanErrorKind.Unknown)
     }
 
-    fun permissionRequired() = error(
-        BleScanErrorKind.PermissionRequired,
-        "Bluetooth permission is required before scanning can start.",
-    )
+    fun permissionRequired() = error(BleScanErrorKind.PermissionRequired)
 
-    fun bluetoothDisabled() = error(
-        BleScanErrorKind.BluetoothDisabled,
-        "Bluetooth is turned off.",
-    )
+    fun bluetoothDisabled() = error(BleScanErrorKind.BluetoothDisabled)
 
-    fun scannerUnavailable() = error(
-        BleScanErrorKind.ScannerUnavailable,
-        "Bluetooth scanning is unavailable on this device.",
-    )
+    fun scannerUnavailable() = error(BleScanErrorKind.ScannerUnavailable)
 
-    private fun error(kind: BleScanErrorKind, message: String) = BleScanError(
-        kind = kind,
-        userMessage = message,
-    )
+    private fun error(kind: BleScanErrorKind) = BleScanError(kind = kind)
 }
 
 internal class ScanSessionGuard {

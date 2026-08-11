@@ -34,6 +34,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,10 +54,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -71,6 +74,9 @@ import com.ble.signal.analyzer.signal.SignalTrackerState
 import com.ble.signal.analyzer.signal.SignalTrend
 import com.ble.signal.analyzer.ui.components.SectionLabel
 import com.ble.signal.analyzer.ui.components.signalQualityColor
+import com.ble.signal.analyzer.ui.proximityLabel
+import com.ble.signal.analyzer.ui.signalQualityLabel
+import com.ble.signal.analyzer.ui.trackingUnavailableMessage
 import kotlin.math.roundToInt
 
 private const val GRAPH_MIN_RSSI = -100f
@@ -100,6 +106,12 @@ fun SignalTrackerScreen(
 ) {
     val currentRssi = trackerState.currentRssi ?: device.rssi
     val quality = signalQualityFor(currentRssi)
+    val qualityLabel = signalQualityLabel(quality)
+    val currentSignalDescription = stringResource(
+        R.string.current_signal_accessibility,
+        currentRssi,
+        qualityLabel,
+    )
     var alertThreshold by rememberSaveable {
         mutableFloatStateOf(proximityAlertThreshold.toFloat())
     }
@@ -165,7 +177,7 @@ fun SignalTrackerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clearAndSetSemantics {
-                        contentDescription = "$currentRssi dBm, ${quality.label} signal"
+                        contentDescription = currentSignalDescription
                     },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.Bottom,
@@ -192,7 +204,7 @@ fun SignalTrackerScreen(
             )
             if (showSignalDescription) {
                 Text(
-                    text = quality.label.uppercase(),
+                    text = qualityLabel,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp)
@@ -214,7 +226,7 @@ fun SignalTrackerScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = trackerState.proximityLabel?.displayName
+                        text = trackerState.proximityLabel?.let { proximityLabel(it) }
                             ?: stringResource(R.string.collecting_signal),
                         style = MaterialTheme.typography.titleLarge,
                     )
@@ -230,10 +242,12 @@ fun SignalTrackerScreen(
             Spacer(modifier = Modifier.height(28.dp))
             SectionLabel(text = stringResource(R.string.last_30_seconds))
             Spacer(modifier = Modifier.height(8.dp))
-            SignalGraph(
-                samples = trackerState.samples,
-                graphTimeMillis = trackerState.graphTimeMillis,
-            )
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                SignalGraph(
+                    samples = trackerState.samples,
+                    graphTimeMillis = trackerState.graphTimeMillis,
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
             SignalStats(
                 minimum = trackerState.minRssi,
@@ -409,7 +423,7 @@ private fun TrackerAvailabilityCard(
 
         state.unavailableReason != null -> {
             title = stringResource(R.string.tracking_paused)
-            description = state.unavailableReason
+            description = trackingUnavailableMessage(state.unavailableReason)
             useErrorColors = false
             actionLabel = stringResource(R.string.resume_tracking)
             action = onResumeTracking
@@ -605,9 +619,15 @@ private fun SignalGraph(
                     .padding(start = 44.dp, top = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text("-30s", style = MaterialTheme.typography.bodyMedium)
-                Text("-15s", style = MaterialTheme.typography.bodyMedium)
-                Text("Now", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    stringResource(R.string.graph_30_seconds_ago),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    stringResource(R.string.graph_15_seconds_ago),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(stringResource(R.string.now), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -726,8 +746,20 @@ private fun SettingSwitchRow(
 
 @Composable
 private fun trendText(trend: SignalTrend): String = when (trend) {
-    SignalTrend.STRONGER -> "↑ ${stringResource(R.string.getting_stronger)}"
-    SignalTrend.WEAKER -> "↓ ${stringResource(R.string.getting_weaker)}"
-    SignalTrend.STABLE -> "— ${stringResource(R.string.stable)}"
-    SignalTrend.COLLECTING -> "• ${stringResource(R.string.collecting_signal)}"
+    SignalTrend.STRONGER -> stringResource(
+        R.string.trend_stronger_format,
+        stringResource(R.string.getting_stronger),
+    )
+    SignalTrend.WEAKER -> stringResource(
+        R.string.trend_weaker_format,
+        stringResource(R.string.getting_weaker),
+    )
+    SignalTrend.STABLE -> stringResource(
+        R.string.trend_stable_format,
+        stringResource(R.string.stable),
+    )
+    SignalTrend.COLLECTING -> stringResource(
+        R.string.trend_collecting_format,
+        stringResource(R.string.collecting_signal),
+    )
 }

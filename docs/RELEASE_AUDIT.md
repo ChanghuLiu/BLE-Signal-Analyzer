@@ -59,9 +59,10 @@ API, or cloud SDK. DataStore transitively uses Okio for local file I/O; Okio is 
 No production logging calls were found, so BLE addresses, manufacturer bytes, and scan records are
 not written to Logcat by app code.
 
-The final direct runtime declarations are the Compose BOM, Activity Compose, Compose Foundation,
-Material Icons Core, Material 3, Compose UI, Compose UI Graphics, AndroidX Core KTX, Preferences
-DataStore, Lifecycle Runtime KTX, and Lifecycle Runtime Compose. Unused direct declarations for
+The final direct runtime declarations are the Compose BOM, Activity Compose, AppCompat, Compose
+Foundation, Material Icons Core, Material 3, Compose UI, Compose UI Graphics, AndroidX Core KTX,
+Preferences DataStore, Lifecycle Runtime KTX, and Lifecycle Runtime Compose. AppCompat provides
+standard per-app locale selection and compatibility storage. Unused direct declarations for
 Compose tooling previews and Lifecycle ViewModel Compose were removed; debug/test tooling remains
 variant-scoped and is not packaged as release functionality. No remaining direct dependency is
 clearly unnecessary for the V1 implementation.
@@ -85,6 +86,10 @@ Preferences DataStore `user_settings` keys:
 - `signal_descriptions`
 - `keep_screen_awake_while_tracking`
 - `proximity_alert_threshold`
+
+The app language selection is stored by the Android/AndroidX per-app locale mechanism. On older
+Android versions, AppCompat auto-storage supplies compatibility persistence; on newer versions,
+the platform manages the app locale. This storage contains no BLE scan data.
 
 SharedPreferences `bluetooth_permission_state` contains only `permission_requested`.
 

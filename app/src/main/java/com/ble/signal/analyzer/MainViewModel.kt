@@ -23,9 +23,12 @@ import com.ble.signal.analyzer.signal.RssiSampleWindow
 import com.ble.signal.analyzer.signal.RssiSmoother
 import com.ble.signal.analyzer.signal.SignalStatisticsAccumulator
 import com.ble.signal.analyzer.signal.SignalTrackerConfig
+import com.ble.signal.analyzer.signal.SignalTrackerSession
 import com.ble.signal.analyzer.signal.SignalTrackerState
 import com.ble.signal.analyzer.signal.SignalTrendCalculator
 import com.ble.signal.analyzer.signal.SmoothedRssiSample
+import com.ble.signal.analyzer.signal.TrackingUnavailableReason
+import com.ble.signal.analyzer.signal.toTrackingUnavailableReason
 import com.ble.signal.analyzer.ui.theme.ThemeMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -64,7 +67,7 @@ data class AppUiState(
     val isScanStarting: Boolean = false,
     val isScanning: Boolean = false,
     val hasCompletedScan: Boolean = false,
-    val scanError: String? = null,
+    val scanError: BleScanErrorKind? = null,
     val bleSupported: Boolean = true,
     val bluetoothEnabled: Boolean = true,
     val permissionState: BluetoothPermissionState = BluetoothPermissionState.NotRequested,
@@ -123,8 +126,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun isBluetoothEnabledOnDevice(): Boolean = bleScanner.isBluetoothEnabled()
 
-    fun showScanError(message: String) {
-        mutableUiState.update { it.copy(scanError = message) }
+    fun showScanError(kind: BleScanErrorKind) {
+        mutableUiState.update { it.copy(scanError = kind) }
     }
 
     fun updateBluetoothEnvironment(
@@ -144,11 +147,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (currentState.signalTrackerState.isTracking && environmentUnavailable) {
             val reason = when {
-                !bleSupported -> "Bluetooth Low Energy is not supported on this device."
+                !bleSupported -> TrackingUnavailableReason.BLE_UNSUPPORTED
                 permissionState != BluetoothPermissionState.Granted ->
-                    "Bluetooth permission is no longer available."
+                    TrackingUnavailableReason.PERMISSION_LOST
 
-                else -> "Bluetooth is turned off."
+                else -> TrackingUnavailableReason.BLUETOOTH_DISABLED
             }
             stopSignalTrackingForUnavailable(reason)
         }
@@ -185,19 +188,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val state = mutableUiState.value
         if (!state.bleSupported) {
             mutableUiState.update {
-                it.copy(scanError = "Bluetooth Low Energy is not supported on this device.")
+                it.copy(scanError = BleScanErrorKind.FeatureUnsupported)
             }
             return
         }
         if (state.permissionState != BluetoothPermissionState.Granted) {
             mutableUiState.update {
-                it.copy(scanError = "Bluetooth permission is required before scanning can start.")
+                it.copy(scanError = BleScanErrorKind.PermissionRequired)
             }
             return
         }
         if (!state.bluetoothEnabled) {
             mutableUiState.update {
-                it.copy(scanError = "Turn on Bluetooth before starting a scan.")
+                it.copy(scanError = BleScanErrorKind.BluetoothDisabled)
             }
             return
         }
@@ -291,26 +294,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val currentState = mutableUiState.value
         val unavailableReason = when {
             !currentState.bleSupported ->
-                "Bluetooth Low Energy is not supported on this device."
+                TrackingUnavailableReason.BLE_UNSUPPORTED
 
             currentState.permissionState != BluetoothPermissionState.Granted ->
-                "Bluetooth permission is required to track this signal."
+                TrackingUnavailableReason.PERMISSION_REQUIRED
 
-            !currentState.bluetoothEnabled -> "Bluetooth is turned off."
+            !currentState.bluetoothEnabled -> TrackingUnavailableReason.BLUETOOTH_DISABLED
             else -> null
         }
         val now = System.currentTimeMillis()
         mutableUiState.update {
             it.copy(
                 destination = AppDestination.SignalTracker,
-                signalTrackerState = SignalTrackerState(
-                    deviceId = device.id,
-                    deviceName = device.name?.takeIf { it.isNotBlank() }
-                        ?: "Unknown Device",
-                    currentRssi = device.rssi,
+                signalTrackerState = SignalTrackerSession.start(
+                    device = device,
+                    nowMillis = now,
                     isTracking = unavailableReason == null,
-                    trackingStartedAt = now,
-                    graphTimeMillis = now,
                     unavailableReason = unavailableReason,
                 ),
             )
@@ -331,7 +330,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun handleTrackingDeviceFound(incoming: BleDeviceInfo) {
         val currentTracker = mutableUiState.value.signalTrackerState
-        if (!currentTracker.isTracking || incoming.id != currentTracker.deviceId) return
+        if (
+            !currentTracker.isTracking ||
+            !SignalTrackerSession.matchesSelectedDevice(
+                state = currentTracker,
+                incomingDeviceId = incoming.id,
+                incomingAddress = incoming.address,
+            )
+        ) return
 
         val statistics = trackerStatistics.add(incoming.rssi)
         val smoothedRssi = RssiSmoother.next(
@@ -353,17 +359,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         mutableUiState.update { state ->
             val tracker = state.signalTrackerState
-            if (!tracker.isTracking || incoming.id != tracker.deviceId) {
+            if (
+                !tracker.isTracking ||
+                !SignalTrackerSession.matchesSelectedDevice(
+                    state = tracker,
+                    incomingDeviceId = incoming.id,
+                    incomingAddress = incoming.address,
+                )
+            ) {
                 return@update state
             }
 
             val timestamp = incoming.lastSeen
+            val trackerWithFreshSignal = SignalTrackerSession.onSelectedAdvertisement(
+                state = tracker,
+                incomingDeviceId = incoming.id,
+                incomingAddress = incoming.address,
+                timestampMillis = timestamp,
+            )
             val samples = RssiSampleWindow.retainRecent(
-                samples = tracker.samples + RssiSample(timestamp, incoming.rssi),
+                samples = trackerWithFreshSignal.samples + RssiSample(timestamp, incoming.rssi),
                 nowMillis = timestamp,
             )
             val smoothedSamples = RssiSampleWindow.retainRecentSmoothed(
-                samples = tracker.smoothedSamples +
+                samples = trackerWithFreshSignal.smoothedSamples +
                     SmoothedRssiSample(timestamp, smoothedRssi),
                 nowMillis = timestamp,
             )
@@ -377,9 +396,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             state.copy(
                 selectedDevice = updatedDevice,
-                signalTrackerState = tracker.copy(
+                signalTrackerState = trackerWithFreshSignal.copy(
                     deviceName = incoming.name?.takeIf { it.isNotBlank() }
-                        ?: tracker.deviceName,
+                        ?: trackerWithFreshSignal.deviceName,
                     currentRssi = incoming.rssi,
                     smoothedRssi = smoothedRssi,
                     samples = samples,
@@ -389,14 +408,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     averageRssi = statistics.average,
                     trend = trend,
                     proximityLabel = ProximityLabelMapper.fromSmoothedRssi(smoothedRssi),
-                    lastSeen = timestamp,
-                    isSignalStale = false,
-                    isSignalLost = false,
                     graphTimeMillis = timestamp,
                     unavailableReason = null,
                     proximityAlertStatus = alertEvaluation.state.status,
                     pendingVibrationEventId = vibrationEventId
-                        ?: tracker.pendingVibrationEventId,
+                        ?: trackerWithFreshSignal.pendingVibrationEventId,
                 ),
             )
         }
@@ -408,7 +424,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             state.copy(
                 signalTrackerState = state.signalTrackerState.copy(
                     isTracking = false,
-                    unavailableReason = error.userMessage,
+                    unavailableReason = error.kind.toTrackingUnavailableReason(),
                 ),
                 bluetoothEnabled = if (error.kind == BleScanErrorKind.BluetoothDisabled) {
                     false
@@ -429,10 +445,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val tracker = state.signalTrackerState
                     if (!tracker.isTracking) return@update state
 
-                    val referenceTime = tracker.lastSeen
-                        ?: tracker.trackingStartedAt
-                        ?: now
-                    val elapsed = (now - referenceTime).coerceAtLeast(0L)
+                    val availability = SignalTrackerSession.availability(
+                        state = tracker,
+                        nowMillis = now,
+                    )
                     state.copy(
                         signalTrackerState = tracker.copy(
                             samples = RssiSampleWindow.retainRecent(
@@ -443,10 +459,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                                 samples = tracker.smoothedSamples,
                                 nowMillis = now,
                             ),
-                            isSignalStale = elapsed >=
-                                SignalTrackerConfig.STALE_AFTER_MILLIS,
-                            isSignalLost = elapsed >=
-                                SignalTrackerConfig.LOST_AFTER_MILLIS,
+                            isSignalStale = availability.isWaiting,
+                            isSignalLost = availability.isLost,
                             graphTimeMillis = now,
                         ),
                     )
@@ -455,7 +469,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun stopSignalTrackingForUnavailable(reason: String) {
+    private fun stopSignalTrackingForUnavailable(reason: TrackingUnavailableReason) {
         releaseSignalTrackingScanner()
         mutableUiState.update { state ->
             state.copy(
@@ -492,7 +506,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         stopScanning(markCompleted = false)
         if (mutableUiState.value.signalTrackerState.isTracking) {
             stopSignalTrackingForUnavailable(
-                "Tracking paused when the app left the foreground.",
+                TrackingUnavailableReason.APP_BACKGROUNDED,
             )
         }
     }
@@ -551,11 +565,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (state.destination != AppDestination.SignalTracker || tracker.isTracking) return
 
         val unavailableReason = when {
-            !state.bleSupported -> "Bluetooth Low Energy is not supported on this device."
+            !state.bleSupported -> TrackingUnavailableReason.BLE_UNSUPPORTED
             state.permissionState != BluetoothPermissionState.Granted ->
-                "Bluetooth permission is required to track this signal."
+                TrackingUnavailableReason.PERMISSION_REQUIRED
 
-            !state.bluetoothEnabled -> "Bluetooth is turned off."
+            !state.bluetoothEnabled -> TrackingUnavailableReason.BLUETOOTH_DISABLED
             else -> null
         }
         if (unavailableReason != null) {
@@ -790,7 +804,7 @@ internal fun AppUiState.afterScanFailure(error: BleScanError): AppUiState = copy
     isScanStarting = false,
     isScanning = false,
     hasCompletedScan = false,
-    scanError = error.userMessage,
+    scanError = error.kind,
     bluetoothEnabled = if (error.kind == BleScanErrorKind.BluetoothDisabled) {
         false
     } else {

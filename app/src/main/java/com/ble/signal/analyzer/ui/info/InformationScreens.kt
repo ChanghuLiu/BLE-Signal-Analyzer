@@ -75,6 +75,7 @@ fun PrivacyPolicyScreen(onBack: () -> Unit) {
             stringResource(R.string.privacy_minimum_rssi),
             stringResource(R.string.privacy_signal_preferences),
             stringResource(R.string.privacy_alert_threshold),
+            stringResource(R.string.privacy_language_preference),
         )
 
         BodyText(stringResource(R.string.privacy_permission_prompt_state))

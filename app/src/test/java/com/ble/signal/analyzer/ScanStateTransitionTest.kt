@@ -1,6 +1,7 @@
 package com.ble.signal.analyzer
 
 import com.ble.signal.analyzer.data.ble.BleScanErrorMapper
+import com.ble.signal.analyzer.data.ble.BleScanErrorKind
 import com.ble.signal.analyzer.model.BleDeviceInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -24,7 +25,7 @@ class ScanStateTransitionTest {
         assertFalse(failed.hasCompletedScan)
         assertEquals(listOf(device), failed.devices)
         assertEquals(listOf(device), failed.visibleDevices)
-        assertTrue(failed.scanError?.isNotBlank() == true)
+        assertEquals(BleScanErrorKind.ScannerUnavailable, failed.scanError)
     }
 
     @Test
@@ -36,7 +37,7 @@ class ScanStateTransitionTest {
 
         assertFalse(failed.bluetoothEnabled)
         assertFalse(failed.isScanning)
-        assertEquals("Bluetooth is turned off.", failed.scanError)
+        assertEquals(BleScanErrorKind.BluetoothDisabled, failed.scanError)
     }
 
     private fun device(id: String) = BleDeviceInfo(

@@ -46,11 +46,8 @@ class BleServiceUuidFormatterTest {
 
     @Test
     fun missingAndMalformedValues_areHandledSafely() {
-        assertEquals(
-            "Not available",
-            BleServiceUuidFormatter.formatListForDisplay(emptyList()),
-        )
-        assertEquals("Not available", BleServiceUuidFormatter.formatForDisplay("  "))
+        assertNull(BleServiceUuidFormatter.formatListForDisplay(emptyList()))
+        assertNull(BleServiceUuidFormatter.formatForDisplay("  "))
         assertEquals("malformed", BleServiceUuidFormatter.formatForDisplay(" malformed "))
         assertNull(BleServiceUuidFormatter.normalize("malformed"))
     }

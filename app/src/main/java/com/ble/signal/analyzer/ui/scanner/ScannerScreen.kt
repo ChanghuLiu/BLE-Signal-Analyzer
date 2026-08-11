@@ -58,13 +58,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ble.signal.analyzer.BluetoothPermissionState
 import com.ble.signal.analyzer.R
-import com.ble.signal.analyzer.data.ble.BleManufacturerLookup
+import com.ble.signal.analyzer.data.ble.BleScanErrorKind
 import com.ble.signal.analyzer.model.BleDeviceInfo
 import com.ble.signal.analyzer.model.signalQualityFor
 import com.ble.signal.analyzer.scanner.DeviceFilterMode
 import com.ble.signal.analyzer.scanner.DeviceSortMode
 import com.ble.signal.analyzer.scanner.ScannerListProcessor
 import com.ble.signal.analyzer.ui.components.SignalStrengthBars
+import com.ble.signal.analyzer.ui.filterModeLabel
+import com.ble.signal.analyzer.ui.manufacturerDisplayName
+import com.ble.signal.analyzer.ui.scanErrorMessage
+import com.ble.signal.analyzer.ui.signalQualityLabel
+import com.ble.signal.analyzer.ui.sortModeLabel
+import com.ble.signal.analyzer.ui.sortModeShortLabel
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +81,7 @@ fun ScannerScreen(
     isScanStarting: Boolean,
     isScanning: Boolean,
     hasCompletedScan: Boolean,
-    scanError: String?,
+    scanError: BleScanErrorKind?,
     bleSupported: Boolean,
     bluetoothEnabled: Boolean,
     permissionState: BluetoothPermissionState,
@@ -173,8 +179,8 @@ fun ScannerScreen(
                             hasCompletedScan = hasCompletedScan,
                         )
                     }
-                    scanError?.let { message ->
-                        item { ScanErrorCard(message = message) }
+                    scanError?.let { errorKind ->
+                        item { ScanErrorCard(errorKind = errorKind) }
                     }
                     item {
                         Button(
@@ -245,7 +251,12 @@ fun ScannerScreen(
                                     showSortDialog = true
                                 },
                             ) {
-                                Text(stringResource(R.string.sort_active, sortMode.shortName))
+                                Text(
+                                    stringResource(
+                                        R.string.sort_active,
+                                        sortModeShortLabel(sortMode),
+                                    ),
+                                )
                             }
                             FilterChip(
                                 selected = freezeEnabled,
@@ -438,7 +449,7 @@ private fun EmptyScanState(onScanAgain: () -> Unit) {
 }
 
 @Composable
-private fun ScanErrorCard(message: String) {
+private fun ScanErrorCard(errorKind: BleScanErrorKind) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
@@ -452,7 +463,7 @@ private fun ScanErrorCard(message: String) {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = message,
+                text = scanErrorMessage(errorKind),
                 modifier = Modifier.padding(top = 4.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
@@ -565,18 +576,26 @@ private fun DeviceCard(
     onClick: () -> Unit,
 ) {
     val quality = signalQualityFor(device.rssi)
+    val qualityLabel = signalQualityLabel(quality)
     val deviceName = device.name?.takeIf { it.isNotBlank() }
         ?: stringResource(R.string.unknown_device)
-    val manufacturerName = BleManufacturerLookup.displayNameFor(device.manufacturerId)
+    val manufacturerName = manufacturerDisplayName(device.manufacturerId)
     val lastSeen = lastSeenLabel(device.lastSeen)
+    val cardDescription = stringResource(
+        R.string.device_card_accessibility,
+        deviceName,
+        manufacturerName,
+        device.rssi,
+        qualityLabel,
+        lastSeen,
+    )
 
     ElevatedCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .semantics(mergeDescendants = true) {
-                contentDescription = "$deviceName, $manufacturerName, Signal " +
-                    "${device.rssi} dBm, ${quality.label}, Last seen $lastSeen"
+                contentDescription = cardDescription
             },
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -612,7 +631,7 @@ private fun DeviceCard(
                     SignalStrengthBars(rssi = device.rssi, quality = quality)
                     if (showSignalDescription) {
                         Text(
-                            text = quality.label,
+                            text = qualityLabel,
                             style = MaterialTheme.typography.labelLarge,
                         )
                     }
@@ -620,7 +639,7 @@ private fun DeviceCard(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${device.rssi} dBm",
+                    text = stringResource(R.string.dbm_value, device.rssi),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )
@@ -671,7 +690,7 @@ private fun FilterDialog(
                             onClick = null,
                             modifier = Modifier.clearAndSetSemantics { },
                         )
-                        Text(option.displayName)
+                        Text(filterModeLabel(option))
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
@@ -692,8 +711,14 @@ private fun FilterDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("-100 dBm", style = MaterialTheme.typography.bodyMedium)
-                    Text("-30 dBm", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(R.string.dbm_value, -100),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        stringResource(R.string.dbm_value, -30),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
                 Text(
                     text = stringResource(
@@ -743,7 +768,7 @@ private fun SortDialog(
                             onClick = null,
                             modifier = Modifier.clearAndSetSemantics { },
                         )
-                        Text(option.displayName)
+                        Text(sortModeLabel(option))
                     }
                 }
                 Text(

@@ -46,6 +46,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ble.signal.analyzer.R
+import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.ui.components.SectionLabel
 import com.ble.signal.analyzer.ui.theme.ThemeMode
 
@@ -58,6 +59,7 @@ fun SettingsScreen(
     minimumRssi: Int,
     keepScreenAwake: Boolean,
     themeMode: ThemeMode,
+    currentLanguage: AppLanguage,
     signalDescriptions: Boolean,
     proximityAlertThreshold: Int,
     onBack: () -> Unit,
@@ -66,6 +68,7 @@ fun SettingsScreen(
     onMinimumRssiChanged: (Int) -> Unit,
     onKeepScreenAwakeChanged: (Boolean) -> Unit,
     onThemeChanged: (ThemeMode) -> Unit,
+    onLanguageChanged: (AppLanguage) -> Unit,
     onSignalDescriptionsChanged: (Boolean) -> Unit,
     onProximityAlertThresholdChanged: (Int) -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
@@ -74,6 +77,7 @@ fun SettingsScreen(
 ) {
     var showScanDurationDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
+    var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
     val minimumSignalDescription = stringResource(R.string.minimum_signal)
     val alertThresholdDescription = stringResource(R.string.proximity_alert_threshold)
 
@@ -186,6 +190,12 @@ fun SettingsScreen(
                     onClick = { showThemeDialog = true },
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                SettingsNavigationRow(
+                    title = stringResource(R.string.language),
+                    value = appLanguageLabel(currentLanguage),
+                    onClick = { showLanguageDialog = true },
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SwitchSettingRow(
                     title = stringResource(R.string.signal_descriptions),
                     description = stringResource(R.string.signal_descriptions_description),
@@ -266,6 +276,20 @@ fun SettingsScreen(
                 showThemeDialog = false
             },
             onDismiss = { showThemeDialog = false },
+        )
+    }
+
+    if (showLanguageDialog) {
+        SelectionDialog(
+            title = stringResource(R.string.select_language),
+            options = AppLanguage.entries,
+            selected = currentLanguage,
+            labelFor = { language -> appLanguageLabel(language) },
+            onSelected = { language ->
+                showLanguageDialog = false
+                onLanguageChanged(language)
+            },
+            onDismiss = { showLanguageDialog = false },
         )
     }
 }
@@ -410,3 +434,23 @@ private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
     ThemeMode.Light -> stringResource(R.string.theme_light)
     ThemeMode.Dark -> stringResource(R.string.theme_dark)
 }
+
+@Composable
+private fun appLanguageLabel(language: AppLanguage): String = stringResource(
+    when (language) {
+        AppLanguage.SystemDefault -> R.string.language_system_default
+        AppLanguage.English -> R.string.language_english
+        AppLanguage.French -> R.string.language_french
+        AppLanguage.German -> R.string.language_german
+        AppLanguage.Spanish -> R.string.language_spanish
+        AppLanguage.PortugueseBrazil -> R.string.language_portuguese_brazil
+        AppLanguage.SimplifiedChinese -> R.string.language_simplified_chinese
+        AppLanguage.TraditionalChinese -> R.string.language_traditional_chinese
+        AppLanguage.Japanese -> R.string.language_japanese
+        AppLanguage.Korean -> R.string.language_korean
+        AppLanguage.Arabic -> R.string.language_arabic
+        AppLanguage.Turkish -> R.string.language_turkish
+        AppLanguage.Indonesian -> R.string.language_indonesian
+        AppLanguage.Hindi -> R.string.language_hindi
+    },
+)

@@ -20,12 +20,12 @@ data class BleManufacturerDataEntry(
     val data: ByteArray,
 )
 
-enum class SignalQuality(val label: String) {
-    Excellent("Excellent"),
-    Strong("Strong"),
-    Good("Good"),
-    Fair("Fair"),
-    Weak("Weak"),
+enum class SignalQuality {
+    Excellent,
+    Strong,
+    Good,
+    Fair,
+    Weak,
 }
 
 fun signalQualityFor(rssi: Int): SignalQuality = when {

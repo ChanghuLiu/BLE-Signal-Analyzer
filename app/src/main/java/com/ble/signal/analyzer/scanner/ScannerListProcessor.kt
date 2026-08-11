@@ -3,17 +3,17 @@ package com.ble.signal.analyzer.scanner
 import com.ble.signal.analyzer.model.BleDeviceInfo
 import java.util.Locale
 
-enum class DeviceFilterMode(val displayName: String) {
-    All("All devices"),
-    Named("Named devices only"),
-    Strong("Strong signals only"),
-    Connectable("Connectable only"),
+enum class DeviceFilterMode {
+    All,
+    Named,
+    Strong,
+    Connectable,
 }
 
-enum class DeviceSortMode(val displayName: String, val shortName: String) {
-    SignalStrength("Signal strength", "Signal"),
-    DeviceName("Device name", "Name"),
-    LastSeen("Last seen", "Recent"),
+enum class DeviceSortMode {
+    SignalStrength,
+    DeviceName,
+    LastSeen,
 }
 
 data class FrozenDeviceList(

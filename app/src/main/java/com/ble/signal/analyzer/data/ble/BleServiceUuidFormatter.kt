@@ -45,9 +45,9 @@ object BleServiceUuidFormatter {
     fun serviceNameFor(value: String): String? =
         standardServiceId(value)?.let(standardServiceNames::get)
 
-    fun formatForDisplay(value: String): String {
+    fun formatForDisplay(value: String): String? {
         val normalized = normalize(value)
-            ?: return value.trim().takeIf { it.isNotEmpty() } ?: "Not available"
+            ?: return value.trim().takeIf { it.isNotEmpty() }
         val serviceId = standardServiceId(normalized) ?: return normalized
         val shortValue = String.format(Locale.ROOT, "0x%04X", serviceId)
         val serviceName = standardServiceNames[serviceId]
@@ -55,13 +55,12 @@ object BleServiceUuidFormatter {
         return "$summary\n$normalized"
     }
 
-    fun formatListForDisplay(values: List<String>): String {
+    fun formatListForDisplay(values: List<String>): String? {
         val formatted = values
             .map { it.trim() }
             .filter { it.isNotEmpty() }
             .distinct()
-            .map(::formatForDisplay)
+            .mapNotNull(::formatForDisplay)
         return formatted.takeIf { it.isNotEmpty() }?.joinToString("\n\n")
-            ?: "Not available"
     }
 }

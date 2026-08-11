@@ -41,6 +41,9 @@ Preferences DataStore file `user_settings` stores only:
 - `keep_screen_awake_while_tracking`
 - `proximity_alert_threshold`
 
+The Android/AndroidX per-app locale mechanism stores the selected app language locally. This
+locale preference contains no BLE device or signal data.
+
 SharedPreferences file `bluetooth_permission_state` stores one local control flag:
 
 - `permission_requested`

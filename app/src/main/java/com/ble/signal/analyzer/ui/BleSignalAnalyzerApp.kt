@@ -6,6 +6,7 @@ import com.ble.signal.analyzer.AppDestination
 import com.ble.signal.analyzer.AppUiState
 import com.ble.signal.analyzer.BuildConfig
 import com.ble.signal.analyzer.model.BleDeviceInfo
+import com.ble.signal.analyzer.localization.AppLanguage
 import com.ble.signal.analyzer.scanner.DeviceFilterMode
 import com.ble.signal.analyzer.scanner.DeviceSortMode
 import com.ble.signal.analyzer.ui.detail.DeviceDetailScreen
@@ -42,6 +43,8 @@ fun BleSignalAnalyzerApp(
     onMinimumRssiChanged: (Int) -> Unit,
     onKeepScreenAwakeChanged: (Boolean) -> Unit,
     onThemeChanged: (ThemeMode) -> Unit,
+    currentLanguage: AppLanguage,
+    onLanguageChanged: (AppLanguage) -> Unit,
     onSignalDescriptionsChanged: (Boolean) -> Unit,
     onProximityAlertThresholdChanged: (Int) -> Unit,
     onProximityAlertEnabledChanged: (Boolean) -> Unit,
@@ -117,6 +120,7 @@ fun BleSignalAnalyzerApp(
             minimumRssi = uiState.minimumRssi,
             keepScreenAwake = uiState.keepScreenAwake,
             themeMode = uiState.themeMode,
+            currentLanguage = currentLanguage,
             signalDescriptions = uiState.signalDescriptions,
             proximityAlertThreshold = uiState.proximityAlertThreshold,
             onBack = onBack,
@@ -125,6 +129,7 @@ fun BleSignalAnalyzerApp(
             onMinimumRssiChanged = onMinimumRssiChanged,
             onKeepScreenAwakeChanged = onKeepScreenAwakeChanged,
             onThemeChanged = onThemeChanged,
+            onLanguageChanged = onLanguageChanged,
             onSignalDescriptionsChanged = onSignalDescriptionsChanged,
             onProximityAlertThresholdChanged = onProximityAlertThresholdChanged,
             onOpenPrivacyPolicy = onOpenPrivacyPolicy,

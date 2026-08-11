@@ -23,13 +23,8 @@ class BleManufacturerLookupTest {
     }
 
     @Test
-    fun unknownAndMissingManufacturers_haveSafeDisplayValues() {
+    fun unknownAndMissingManufacturers_returnNullForUiFallback() {
         assertNull(BleManufacturerLookup.nameFor(0xFFFF))
-        assertEquals(
-            "Unknown manufacturer",
-            BleManufacturerLookup.displayNameFor(0xFFFF),
-        )
-        assertEquals("Not available", BleManufacturerLookup.displayNameFor(null))
-        assertEquals("Not available", BleManufacturerLookup.formatId(null))
+        assertNull(BleManufacturerLookup.formatId(null))
     }
 }
