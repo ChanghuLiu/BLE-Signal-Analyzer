@@ -47,7 +47,7 @@ media/storage, contacts, phone, or broad package-query permission is present.
 - External Privacy Policy URL target:
   `https://changhuliu.github.io/BLE-Signal-Analyzer/privacy.html`
 - GitHub Pages status: **NOT YET ENABLED — URL MUST BE VERIFIED BEFORE PLAY SUBMISSION**
-- Support email: `artbyte@126.com`
+- Support email: `launchcircle.server@gmail.com`
 - BLE scan processing: local and memory-only
 - BLE history: not persisted
 - Preferences: app settings use DataStore; language uses Android/AndroidX per-app locale storage;

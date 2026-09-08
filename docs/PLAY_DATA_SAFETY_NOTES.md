@@ -83,5 +83,5 @@ checked against the behavior of supported devices and current policy definitions
 - Verify the final release AAB has the same merged permissions.
 - Review whether on-device-only processing is outside "collected" under the current Data Safety
   definitions instead of relying on this document alone.
-- Support email is configured as `artbyte@126.com`.
+- Support email is configured as `launchcircle.server@gmail.com`.
 - Enable GitHub Pages and verify the public Privacy Policy URL before submission.

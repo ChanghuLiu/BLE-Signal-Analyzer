@@ -8,7 +8,7 @@ Recommendation: **BLOCKED**
 - Application ID/package: `com.ble.signal.analyzer`
 - `versionCode`: `2`
 - `versionName`: `2.0`
-- Support email: `artbyte@126.com`
+- Support email: `launchcircle.server@gmail.com`
 - Test handset: Samsung SM-J327W, Android API 27, 720x1280, physical BLE advertisements
 
 ## Automated verification

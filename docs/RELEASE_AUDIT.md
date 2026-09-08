@@ -17,7 +17,7 @@ configured in Play Console, and the physical-device checklist remains open.
 
 No old package name, alternate product name, mock product name, or executable Phase 1 sample data
 was found. Test-only BLE values remain confined to unit tests. The inactive generic R8 placeholder
-comment was removed. The support contact is configured as `artbyte@126.com`.
+comment was removed. The support contact is configured as `launchcircle.server@gmail.com`.
 
 ## 2. SDK configuration
 

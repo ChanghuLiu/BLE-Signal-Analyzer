@@ -19,7 +19,7 @@ Website: https://changhuliu.github.io/BLE-Signal-Analyzer/
 - [Support](https://changhuliu.github.io/BLE-Signal-Analyzer/support.html)
 - [Terms of Use](https://changhuliu.github.io/BLE-Signal-Analyzer/terms.html)
 
-Support contact: artbyte@126.com
+Support contact: launchcircle.server@gmail.com
 
 ## Architecture
 

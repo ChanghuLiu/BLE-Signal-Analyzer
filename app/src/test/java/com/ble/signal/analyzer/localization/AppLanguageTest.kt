@@ -11,7 +11,7 @@ class AppLanguageTest {
         assertEquals(13, AppLanguage.supportedLanguages.size)
         assertEquals(
             setOf(
-                "en", "fr", "de", "es", "pt-BR", "zh-CN", "zh-TW",
+                "en", "fr", "de", "es-ES", "pt-BR", "zh-CN", "zh-TW",
                 "ja", "ko", "ar", "tr", "id", "hi",
             ),
             AppLanguage.supportedLanguages.mapNotNull(AppLanguage::languageTag).toSet(),
@@ -31,6 +31,8 @@ class AppLanguageTest {
         assertEquals(AppLanguage.TraditionalChinese, AppLanguage.fromLanguageTags("zh_TW"))
         assertEquals(AppLanguage.Indonesian, AppLanguage.fromLanguageTags("id"))
         assertEquals(AppLanguage.Indonesian, AppLanguage.fromLanguageTags("in"))
+        assertEquals(AppLanguage.Spanish, AppLanguage.fromLanguageTags("es"))
+        assertEquals(AppLanguage.Spanish, AppLanguage.fromLanguageTags("es-ES"))
     }
 
     @Test

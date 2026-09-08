@@ -5,7 +5,7 @@ enum class AppLanguage(val languageTag: String?) {
     English("en"),
     French("fr"),
     German("de"),
-    Spanish("es"),
+    Spanish("es-ES"),
     PortugueseBrazil("pt-BR"),
     SimplifiedChinese("zh-CN"),
     TraditionalChinese("zh-TW"),
@@ -27,6 +27,7 @@ enum class AppLanguage(val languageTag: String?) {
             val requestedTag = languageTags.substringBefore(',').trim()
                 .replace('_', '-')
             if (requestedTag.equals("in", ignoreCase = true)) return Indonesian
+            if (requestedTag.equals("es", ignoreCase = true)) return Spanish
             return supportedLanguages.firstOrNull {
                 it.languageTag.equals(requestedTag, ignoreCase = true)
             } ?: English

@@ -1,3 +1,24 @@
+import java.util.Properties
+
+val releaseSigningPropertiesFile = file("/home/cliu/.config/ble-signal-analyzer/signing.properties")
+if (!releaseSigningPropertiesFile.isFile) {
+    throw GradleException(
+        "BLE Signal Analyzer release signing requires the secure file at " +
+            releaseSigningPropertiesFile.absolutePath,
+    )
+}
+
+val releaseSigningProperties = Properties().apply {
+    releaseSigningPropertiesFile.inputStream().use(::load)
+}
+
+fun requiredReleaseSigningProperty(name: String): String =
+    releaseSigningProperties.getProperty(name)?.takeIf { it.isNotBlank() }
+        ?: throw GradleException(
+            "BLE Signal Analyzer release signing property '$name' is missing from " +
+                releaseSigningPropertiesFile.absolutePath,
+        )
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -11,16 +32,26 @@ android {
 
     defaultConfig {
         applicationId = "com.ble.signal.analyzer"
-        minSdk = 26
+        minSdk = 27
         targetSdk = 37
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 4
+        versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(requiredReleaseSigningProperty("storeFile"))
+            storePassword = requiredReleaseSigningProperty("storePassword")
+            keyAlias = requiredReleaseSigningProperty("keyAlias")
+            keyPassword = requiredReleaseSigningProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             optimization {
                 enable = false
             }
