@@ -1,16 +1,18 @@
 import java.util.Properties
 
-val releaseSigningPropertiesFile = file("/home/cliu/.config/ble-signal-analyzer/signing.properties")
-if (!releaseSigningPropertiesFile.isFile) {
-    throw GradleException(
-        "BLE Signal Analyzer release signing requires the secure file at " +
-            releaseSigningPropertiesFile.absolutePath,
-    )
-}
+val releaseSigningPropertiesFile =
+    file("${System.getProperty("user.home")}/.config/ble-signal-analyzer/signing.properties")
 
 val releaseSigningProperties = Properties().apply {
-    releaseSigningPropertiesFile.inputStream().use(::load)
+    if (releaseSigningPropertiesFile.isFile) {
+        releaseSigningPropertiesFile.inputStream().use(::load)
+    }
 }
+
+val releaseSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+val releaseSigningConfigured =
+    releaseSigningPropertiesFile.isFile &&
+        releaseSigningKeys.all { releaseSigningProperties.getProperty(it)?.isNotBlank() == true }
 
 fun requiredReleaseSigningProperty(name: String): String =
     releaseSigningProperties.getProperty(name)?.takeIf { it.isNotBlank() }
@@ -34,24 +36,28 @@ android {
         applicationId = "com.ble.signal.analyzer"
         minSdk = 27
         targetSdk = 37
-        versionCode = 4
-        versionName = "2.2"
+        versionCode = 5
+        versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(requiredReleaseSigningProperty("storeFile"))
-            storePassword = requiredReleaseSigningProperty("storePassword")
-            keyAlias = requiredReleaseSigningProperty("keyAlias")
-            keyPassword = requiredReleaseSigningProperty("keyPassword")
+        if (releaseSigningConfigured) {
+            create("release") {
+                storeFile = file(requiredReleaseSigningProperty("storeFile"))
+                storePassword = requiredReleaseSigningProperty("storePassword")
+                keyAlias = requiredReleaseSigningProperty("keyAlias")
+                keyPassword = requiredReleaseSigningProperty("keyPassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             optimization {
                 enable = false
             }
@@ -65,6 +71,22 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+tasks.register("verifyReleaseSigning") {
+    inputs.property("releaseSigningConfigured", releaseSigningConfigured)
+    inputs.property("releaseSigningPropertiesPath", releaseSigningPropertiesFile.absolutePath)
+    doLast {
+        val configured = inputs.properties["releaseSigningConfigured"] as Boolean
+        val propertiesPath = inputs.properties["releaseSigningPropertiesPath"] as String
+        check(configured) {
+            "BLE Signal Analyzer release signing requires a complete secure file at $propertiesPath"
+        }
+    }
+}
+
+tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    dependsOn("verifyReleaseSigning")
 }
 
 dependencies {
