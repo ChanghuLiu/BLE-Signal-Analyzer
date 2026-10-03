@@ -9,6 +9,7 @@ val releaseSigningProperties = Properties().apply {
     }
 }
 
+val expectedReleaseKeyAlias = "ble_signal_upload"
 val releaseSigningKeys = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
 val releaseSigningConfigured =
     releaseSigningPropertiesFile.isFile &&
@@ -76,11 +77,18 @@ android {
 tasks.register("verifyReleaseSigning") {
     inputs.property("releaseSigningConfigured", releaseSigningConfigured)
     inputs.property("releaseSigningPropertiesPath", releaseSigningPropertiesFile.absolutePath)
+    inputs.property("releaseKeyAlias", releaseSigningProperties.getProperty("keyAlias").orEmpty())
+    inputs.property("expectedReleaseKeyAlias", expectedReleaseKeyAlias)
     doLast {
         val configured = inputs.properties["releaseSigningConfigured"] as Boolean
         val propertiesPath = inputs.properties["releaseSigningPropertiesPath"] as String
+        val alias = inputs.properties["releaseKeyAlias"] as String
+        val expectedAlias = inputs.properties["expectedReleaseKeyAlias"] as String
         check(configured) {
             "BLE Signal Analyzer release signing requires a complete secure file at $propertiesPath"
+        }
+        check(alias == expectedAlias) {
+            "BLE Signal Analyzer release signing alias must be $expectedAlias, found $alias"
         }
     }
 }
