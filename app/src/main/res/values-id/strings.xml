@@ -334,4 +334,20 @@
     <string name="csv_export_failed">Ekspor CSV tidak dapat dibuat.</string>
     <string name="feature_csv_export">Ekspor sesi saat ini sebagai CSV</string>
     <string name="privacy_export_summary">Pengguna dapat secara eksplisit mengekspor data sesi saat ini sebagai CSV. File dibuat secara lokal dan tidak diunggah oleh BLE Signal Analyzer. File hanya keluar dari aplikasi saat pengguna memilih tujuan melalui fitur berbagi Android. Aplikasi tidak menyimpan riwayat ekspor.</string>
+
+    <string name="settings_data_section">PRIVASI DAN DATA</string>
+    <string name="temporary_csv_exports_title">Ekspor CSV sementara</string>
+    <string name="temporary_csv_exports_description">File ekspor disimpan di penyimpanan aplikasi hingga 24 jam. Salinan yang sudah dibagikan dapat tetap ada di aplikasi lain.</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="one">1 file CSV sementara</item>
+        <item quantity="other">%1$d file CSV sementara</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">Hapus sekarang</string>
+    <string name="clear_csv_exports_dialog_title">Hapus ekspor sementara?</string>
+    <string name="clear_csv_exports_dialog_message">Tindakan ini menghapus file CSV yang disimpan BLE Signal Analyzer. Salinan yang sudah dibagikan dapat tetap ada di aplikasi lain.</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="one">%1$d file CSV sementara dihapus.</item>
+        <item quantity="other">%1$d file CSV sementara dihapus.</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">Tidak ada file CSV sementara</string>
 </resources>

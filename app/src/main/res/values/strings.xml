@@ -359,4 +359,20 @@
     <string name="csv_export_failed">Could not create the CSV export.</string>
     <string name="feature_csv_export">Export current sessions as CSV</string>
     <string name="privacy_export_summary">Users can explicitly export current-session data as CSV. Export files are created locally, and BLE Signal Analyzer does not upload them. Files leave the app only when the user chooses a destination through Android’s share functionality. The app maintains no export history.</string>
+
+    <string name="settings_data_section">PRIVACY AND DATA</string>
+    <string name="temporary_csv_exports_title">Temporary CSV exports</string>
+    <string name="temporary_csv_exports_description">Exports stay in app storage for up to 24 hours. Copies already shared may remain in other apps.</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="one">%1$d temporary CSV file</item>
+        <item quantity="other">%1$d temporary CSV files</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">Clear now</string>
+    <string name="clear_csv_exports_dialog_title">Clear temporary exports?</string>
+    <string name="clear_csv_exports_dialog_message">This deletes CSV files stored by BLE Signal Analyzer. Copies already shared may remain in other apps.</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="one">Cleared %1$d temporary CSV file.</item>
+        <item quantity="other">Cleared %1$d temporary CSV files.</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">No temporary CSV files</string>
 </resources>

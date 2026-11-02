@@ -344,4 +344,28 @@
     <string name="csv_export_failed">تعذر إنشاء ملف CSV.</string>
     <string name="feature_csv_export">تصدير الجلسات الحالية بصيغة CSV</string>
     <string name="privacy_export_summary">يمكن للمستخدمين تصدير بيانات الجلسة الحالية بصيغة CSV بإجراء صريح. تُنشأ الملفات محليًا ولا يرفعها BLE Signal Analyzer. لا تغادر الملفات التطبيق إلا عندما يختار المستخدم وجهة عبر ميزة المشاركة في Android. لا يحتفظ التطبيق بسجل للتصدير.</string>
+
+    <string name="settings_data_section">الخصوصية والبيانات</string>
+    <string name="temporary_csv_exports_title">ملفات CSV المؤقتة</string>
+    <string name="temporary_csv_exports_description">تبقى الملفات في مساحة التطبيق لمدة تصل إلى 24 ساعة. وقد تبقى النسخ التي تمت مشاركتها في تطبيقات أخرى.</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="zero">لا توجد ملفات CSV مؤقتة</item>
+        <item quantity="one">ملف CSV مؤقت واحد</item>
+        <item quantity="two">ملفا CSV مؤقتان</item>
+        <item quantity="few">%1$d ملفات CSV مؤقتة</item>
+        <item quantity="many">%1$d ملف CSV مؤقت</item>
+        <item quantity="other">%1$d ملف CSV مؤقت</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">مسح الآن</string>
+    <string name="clear_csv_exports_dialog_title">مسح الملفات المؤقتة؟</string>
+    <string name="clear_csv_exports_dialog_message">سيؤدي ذلك إلى حذف ملفات CSV المخزنة في BLE Signal Analyzer. وقد تبقى النسخ التي تمت مشاركتها في تطبيقات أخرى.</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="zero">لم يتم مسح أي ملفات CSV مؤقتة.</item>
+        <item quantity="one">تم مسح ملف CSV مؤقت واحد (%1$d).</item>
+        <item quantity="two">تم مسح ملفي CSV مؤقتين (%1$d).</item>
+        <item quantity="few">تم مسح %1$d ملفات CSV مؤقتة.</item>
+        <item quantity="many">تم مسح %1$d ملف CSV مؤقت.</item>
+        <item quantity="other">تم مسح %1$d ملف CSV مؤقت.</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">لا توجد ملفات CSV مؤقتة</string>
 </resources>

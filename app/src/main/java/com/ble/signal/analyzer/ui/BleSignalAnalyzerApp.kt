@@ -63,6 +63,8 @@ fun BleSignalAnalyzerApp(
     onProximityAlertThresholdChanged: (Int) -> Unit,
     onProximityAlertEnabledChanged: (Boolean) -> Unit,
     onVibrationConsumed: (Long) -> Unit,
+    cachedCsvExportCount: Int,
+    onClearCsvExports: () -> Unit,
 ) {
     BackHandler(enabled = uiState.destination != AppDestination.Scanner, onBack = onBack)
 
@@ -200,6 +202,8 @@ fun BleSignalAnalyzerApp(
             onOpenPrivacyPolicy = onOpenPrivacyPolicy,
             onOpenHowBleSignalsWork = onOpenHowBleSignalsWork,
             onOpenAbout = onOpenAbout,
+            cachedCsvExportCount = cachedCsvExportCount,
+            onClearCsvExports = onClearCsvExports,
         )
 
         AppDestination.PrivacyPolicy -> PrivacyPolicyScreen(onBack = onBack)

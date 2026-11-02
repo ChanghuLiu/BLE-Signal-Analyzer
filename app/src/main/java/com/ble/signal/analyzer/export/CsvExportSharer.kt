@@ -8,12 +8,26 @@ import java.io.File
 
 /** Writes a temporary UTF-8 CSV file and delegates its destination to Android's share sheet. */
 class CsvExportSharer(private val context: Context) {
-    fun share(document: CsvExportDocument, chooserTitle: String, nowMillis: Long) {
+    fun cleanupExpiredExports(nowMillis: Long) {
         val exportDirectory = File(context.cacheDir, EXPORT_DIRECTORY)
+        if (exportDirectory.isDirectory) {
+            cachedExportFiles(exportDirectory)
+                .filter { nowMillis - it.lastModified() >= MAX_EXPORT_AGE_MILLIS }
+                .forEach(File::delete)
+        }
+    }
+
+    fun countCachedExports(): Int = cachedExportFiles(exportDirectory()).size
+
+    fun clearCachedExports(): Int = cachedExportFiles(exportDirectory())
+        .count(File::delete)
+
+    fun share(document: CsvExportDocument, chooserTitle: String, nowMillis: Long) {
+        val exportDirectory = exportDirectory()
         check(exportDirectory.exists() || exportDirectory.mkdirs()) {
             "Unable to create export cache directory"
         }
-        deleteExpiredExports(exportDirectory, nowMillis)
+        cleanupExpiredExports(nowMillis)
 
         val exportFile = File(
             exportDirectory,
@@ -34,13 +48,12 @@ class CsvExportSharer(private val context: Context) {
         context.startActivity(Intent.createChooser(sendIntent, chooserTitle))
     }
 
-    private fun deleteExpiredExports(exportDirectory: File, nowMillis: Long) {
+    private fun exportDirectory() = File(context.cacheDir, EXPORT_DIRECTORY)
+
+    private fun cachedExportFiles(exportDirectory: File): List<File> =
         exportDirectory.listFiles()
-            ?.filter { file ->
-                file.isFile && nowMillis - file.lastModified() >= MAX_EXPORT_AGE_MILLIS
-            }
-            ?.forEach(File::delete)
-    }
+            ?.filter { it.isFile && it.extension.equals("csv", ignoreCase = true) }
+            .orEmpty()
 
     private companion object {
         const val EXPORT_DIRECTORY = "export"

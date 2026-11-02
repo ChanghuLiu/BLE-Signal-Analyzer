@@ -334,4 +334,20 @@
     <string name="csv_export_failed">无法创建 CSV 导出文件。</string>
     <string name="feature_csv_export">将当前会话导出为 CSV</string>
     <string name="privacy_export_summary">用户可以明确选择将当前会话数据导出为 CSV。导出文件在本地创建，BLE Signal Analyzer 不会上传这些文件。只有当用户通过 Android 分享功能选择目标时，文件才会离开本应用。本应用不保留导出历史。</string>
+
+    <string name="settings_data_section">隐私与数据</string>
+    <string name="temporary_csv_exports_title">临时 CSV 导出</string>
+    <string name="temporary_csv_exports_description">导出文件最多在应用存储中保留 24 小时。已分享的副本可能仍保留在其他应用中。</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="one">1 个临时 CSV 文件</item>
+        <item quantity="other">%1$d 个临时 CSV 文件</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">立即清理</string>
+    <string name="clear_csv_exports_dialog_title">清理临时导出文件？</string>
+    <string name="clear_csv_exports_dialog_message">这会删除 BLE Signal Analyzer 中保存的 CSV 文件。已分享的副本可能仍保留在其他应用中。</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="one">已清理 %1$d 个临时 CSV 文件。</item>
+        <item quantity="other">已清理 %1$d 个临时 CSV 文件。</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">没有临时 CSV 文件</string>
 </resources>

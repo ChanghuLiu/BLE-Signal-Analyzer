@@ -16,6 +16,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private var bluetoothReceiverRegistered = false
     private var permissionRequestInFlight = false
+    private var cachedCsvExportCount by mutableIntStateOf(0)
     private val csvExportSharer by lazy { CsvExportSharer(this) }
 
     private val permissionPreferences by lazy {
@@ -129,6 +133,8 @@ class MainActivity : AppCompatActivity() {
                     onProximityAlertEnabledChanged =
                         viewModel::setProximityAlertEnabled,
                     onVibrationConsumed = viewModel::consumeProximityAlertVibration,
+                    cachedCsvExportCount = cachedCsvExportCount,
+                    onClearCsvExports = ::clearCsvExports,
                 )
             }
         }
@@ -149,6 +155,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        csvExportSharer.cleanupExpiredExports(System.currentTimeMillis())
+        cachedCsvExportCount = csvExportSharer.countCachedExports()
         if (!permissionRequestInFlight) {
             refreshBluetoothEnvironment()
         }
@@ -288,6 +296,20 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) {
             Toast.makeText(this, R.string.csv_export_failed, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun clearCsvExports() {
+        val deletedCount = csvExportSharer.clearCachedExports()
+        cachedCsvExportCount = csvExportSharer.countCachedExports()
+        Toast.makeText(
+            this,
+            resources.getQuantityString(
+                R.plurals.csv_export_files_cleared,
+                deletedCount,
+                deletedCount,
+            ),
+            Toast.LENGTH_SHORT,
+        ).show()
     }
 
     private fun openAppSettings() {

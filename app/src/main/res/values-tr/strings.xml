@@ -336,4 +336,20 @@
     <string name="csv_export_failed">CSV dışa aktarımı oluşturulamadı.</string>
     <string name="feature_csv_export">Geçerli oturumları CSV olarak dışa aktar</string>
     <string name="privacy_export_summary">Kullanıcılar geçerli oturum verilerini açıkça CSV olarak dışa aktarabilir. Dosyalar yerel olarak oluşturulur ve BLE Signal Analyzer bunları yüklemez. Dosyalar yalnızca kullanıcı Android paylaşım özelliğiyle bir hedef seçtiğinde uygulamadan çıkar. Uygulama dışa aktarım geçmişi tutmaz.</string>
+
+    <string name="settings_data_section">GİZLİLİK VE VERİLER</string>
+    <string name="temporary_csv_exports_title">Geçici CSV dışa aktarımları</string>
+    <string name="temporary_csv_exports_description">Dışa aktarımlar uygulama depolamasında en fazla 24 saat tutulur. Paylaşılan kopyalar diğer uygulamalarda kalabilir.</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="one">1 geçici CSV dosyası</item>
+        <item quantity="other">%1$d geçici CSV dosyası</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">Şimdi temizle</string>
+    <string name="clear_csv_exports_dialog_title">Geçici dışa aktarımlar temizlensin mi?</string>
+    <string name="clear_csv_exports_dialog_message">Bu işlem BLE Signal Analyzer içinde saklanan CSV dosyalarını siler. Paylaşılan kopyalar diğer uygulamalarda kalabilir.</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="one">%1$d geçici CSV dosyası temizlendi.</item>
+        <item quantity="other">%1$d geçici CSV dosyası temizlendi.</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">Geçici CSV dosyası yok</string>
 </resources>

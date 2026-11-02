@@ -334,4 +334,20 @@
     <string name="csv_export_failed">無法建立 CSV 匯出檔。</string>
     <string name="feature_csv_export">將目前工作階段匯出為 CSV</string>
     <string name="privacy_export_summary">使用者可以明確選擇將目前工作階段資料匯出為 CSV。匯出檔案在本機建立，BLE Signal Analyzer 不會上傳這些檔案。只有當使用者透過 Android 分享功能選擇目的地時，檔案才會離開本應用程式。本應用程式不保留匯出記錄。</string>
+
+    <string name="settings_data_section">隱私與資料</string>
+    <string name="temporary_csv_exports_title">暫存 CSV 匯出</string>
+    <string name="temporary_csv_exports_description">匯出檔最多會在應用程式儲存空間保留 24 小時。已分享的副本可能仍保留在其他應用程式中。</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="one">1 個暫存 CSV 檔案</item>
+        <item quantity="other">%1$d 個暫存 CSV 檔案</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">立即清除</string>
+    <string name="clear_csv_exports_dialog_title">清除暫存匯出檔案？</string>
+    <string name="clear_csv_exports_dialog_message">這會刪除 BLE Signal Analyzer 中儲存的 CSV 檔案。已分享的副本可能仍保留在其他應用程式中。</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="one">已清除 %1$d 個暫存 CSV 檔案。</item>
+        <item quantity="other">已清除 %1$d 個暫存 CSV 檔案。</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">沒有暫存 CSV 檔案</string>
 </resources>

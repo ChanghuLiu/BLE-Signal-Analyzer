@@ -37,7 +37,9 @@ is used only to render the scanner, detail, and active tracker screens.
   directory through a non-exported AndroidX FileProvider.
 - The app does not upload the file. Android's Sharesheet transfers it only to the destination
   explicitly selected by the user.
-- Export cache files older than 24 hours are deleted when another export is generated.
+- Export cache files older than 24 hours are deleted when the app resumes and before another
+  export is generated. Users can also clear all app-cached CSV exports from Settings. Recent files
+  remain available so a share target can finish reading them.
 - The app stores no export index, archive, database, or history. A destination chosen by the user
   may retain its own copy outside the app's control.
 

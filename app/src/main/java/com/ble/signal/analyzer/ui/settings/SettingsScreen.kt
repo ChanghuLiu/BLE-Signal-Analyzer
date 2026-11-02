@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,10 +81,13 @@ fun SettingsScreen(
     onOpenPrivacyPolicy: () -> Unit,
     onOpenHowBleSignalsWork: () -> Unit,
     onOpenAbout: () -> Unit,
+    cachedCsvExportCount: Int,
+    onClearCsvExports: () -> Unit,
 ) {
     var showScanDurationDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
     var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+    var showClearCsvExportsDialog by rememberSaveable { mutableStateOf(false) }
     val minimumSignalDescription = stringResource(R.string.minimum_signal)
     val alertThresholdDescription = stringResource(R.string.proximity_alert_threshold)
 
@@ -211,6 +215,46 @@ fun SettingsScreen(
             }
 
             Spacer(modifier = Modifier.height(28.dp))
+            SectionLabel(text = stringResource(R.string.settings_data_section))
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSurface {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.temporary_csv_exports_title),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = if (cachedCsvExportCount == 0) {
+                            stringResource(R.string.no_temporary_csv_exports)
+                        } else {
+                            pluralStringResource(
+                                R.plurals.temporary_csv_exports_count,
+                                cachedCsvExportCount,
+                                cachedCsvExportCount,
+                            )
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        stringResource(R.string.temporary_csv_exports_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Button(
+                        onClick = { showClearCsvExportsDialog = true },
+                        enabled = cachedCsvExportCount > 0,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(stringResource(R.string.clear_temporary_csv_exports))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
             SectionLabel(text = stringResource(R.string.settings_about_section))
             Spacer(modifier = Modifier.height(8.dp))
             SettingsSurface {
@@ -296,6 +340,29 @@ fun SettingsScreen(
                 onLanguageChanged(language)
             },
             onDismiss = { showLanguageDialog = false },
+        )
+    }
+
+    if (showClearCsvExportsDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearCsvExportsDialog = false },
+            title = { Text(stringResource(R.string.clear_csv_exports_dialog_title)) },
+            text = { Text(stringResource(R.string.clear_csv_exports_dialog_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showClearCsvExportsDialog = false
+                        onClearCsvExports()
+                    },
+                ) {
+                    Text(stringResource(R.string.clear_temporary_csv_exports))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearCsvExportsDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
         )
     }
 }

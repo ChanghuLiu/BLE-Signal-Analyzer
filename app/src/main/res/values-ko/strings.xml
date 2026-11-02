@@ -334,4 +334,20 @@
     <string name="csv_export_failed">CSV 내보내기 파일을 만들 수 없습니다.</string>
     <string name="feature_csv_export">현재 세션을 CSV로 내보내기</string>
     <string name="privacy_export_summary">사용자는 현재 세션 데이터를 명시적으로 CSV로 내보낼 수 있습니다. 파일은 기기에서 로컬로 생성되며 BLE Signal Analyzer는 업로드하지 않습니다. 사용자가 Android 공유 기능에서 대상을 선택한 경우에만 파일이 앱 외부로 전달됩니다. 앱은 내보내기 기록을 유지하지 않습니다.</string>
+
+    <string name="settings_data_section">개인정보 및 데이터</string>
+    <string name="temporary_csv_exports_title">임시 CSV 내보내기</string>
+    <string name="temporary_csv_exports_description">내보낸 파일은 앱 저장소에 최대 24시간 보관됩니다. 공유한 사본은 다른 앱에 남을 수 있습니다.</string>
+    <plurals name="temporary_csv_exports_count">
+        <item quantity="one">임시 CSV 파일 1개</item>
+        <item quantity="other">임시 CSV 파일 %1$d개</item>
+    </plurals>
+    <string name="clear_temporary_csv_exports">지금 지우기</string>
+    <string name="clear_csv_exports_dialog_title">임시 내보내기를 지울까요?</string>
+    <string name="clear_csv_exports_dialog_message">BLE Signal Analyzer에 저장된 CSV 파일을 삭제합니다. 공유한 사본은 다른 앱에 남을 수 있습니다.</string>
+    <plurals name="csv_export_files_cleared">
+        <item quantity="one">임시 CSV 파일 %1$d개를 지웠습니다.</item>
+        <item quantity="other">임시 CSV 파일 %1$d개를 지웠습니다.</item>
+    </plurals>
+    <string name="no_temporary_csv_exports">임시 CSV 파일 없음</string>
 </resources>
